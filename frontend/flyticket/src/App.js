@@ -1,9 +1,11 @@
 import logo from './logo.svg';
 import './App.css';
+import React from 'react';
 
 function App() {
   return (
     <div className="App">
+      {React.createElement(Welcome, {name: 'Oleg'})}
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
@@ -21,5 +23,10 @@ function App() {
     </div>
   );
 }
+
+function Welcome(props) {
+  return React.createElement('h1', null, `Привет, ${props.name}`);
+}
+
 
 export default App;
