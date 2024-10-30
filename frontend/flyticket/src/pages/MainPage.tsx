@@ -3,6 +3,36 @@ import React from 'react';
 import Header from '../components/Header';
 import FlightCard from '../components/FlightCard';
 
+/* Код из ChatGPT, где происходит инициализация полученных данных в формате json
+import React, { useEffect, useState } from 'react';
+
+const FlightsList: React.FC = () => {
+  const [flights, setFlights] = useState([]);
+
+  useEffect(() => {
+    fetch('/path/to/data.json')
+      .then(response => response.json())
+      .then(data => setFlights(data));
+  }, []);
+
+  return (
+    <div>
+      {flights.map(flight => (
+        <div key={flight.id}>
+          <p>Рейс: {flight.flightNumber}</p>
+          <p>От: {flight.departure}</p>
+          <p>Куда: {flight.arrival}</p>
+          <p>Дата: {flight.date}</p>
+          <p>Время: {flight.time}</p>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default FlightsList;
+*/
+
 const flights = [
   { id: 1, departure: 'Нурсултан Назарбаев', arrival: 'Корея', date: '2023-11-10', time: '10:00', flightNumber: 'A1 234' },
   { id: 2, departure: 'Нурсултан Назарбаев', arrival: 'Казань', date: '2023-11-12', time: '13:30', flightNumber: 'A1 543' },
