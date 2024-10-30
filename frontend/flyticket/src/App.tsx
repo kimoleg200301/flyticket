@@ -1,37 +1,18 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import LoginPage from './pages/LoginPage';
+import MainPage from './pages/MainPage';
+import FlightDetailsPage from './pages/FlightDetailsPage';
 
-function App() {
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <Welcome name={"Oleg"} age={10}/>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/MainPage" element={<MainPage />} />
+        <Route path="/FlightDetailsPage" element={<FlightDetailsPage departure="Нурсултан-Назарбаев" arrival="Санкт-Петербург" username="Тажи Нурдаулет" date="2023-11-10" flightNumber="A1 234" seats={{economy: 0, business: 1, firstClass: 0}} />} />
+      </Routes>
+    </Router>
   );
 }
 
-type WelcomeProps = {
-  name: string
-  age: number
-}
-const Welcome = ({name, age}: WelcomeProps) => {
-  return (
-    <div>Hi, {name}. My age is {age}</div>
-  )
-}
-
-export default App;
+export default App;  
