@@ -21,8 +21,8 @@ const MainPage: React.FC = () => {
     <div style={styles.pageContainer}>
       <Header />
       <div style={styles.flightsContainer}>
-        {flights.map((flight) => (
-          <FlightCard key={flight.id} {...flight} />
+        {flights.map((FlightDetailsPage) => (
+          <FlightCard key={FlightDetailsPage.id} {...FlightDetailsPage} />
         ))}
       </div>
     </div>

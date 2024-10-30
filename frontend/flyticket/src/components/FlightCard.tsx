@@ -13,7 +13,7 @@ interface FlightProps {
 const FlightCard: React.FC<FlightProps> = ({ id, departure, arrival, date, time }) => {
   return (
     <div style={styles.cardContainer}>
-      <Link to={`/flight/${id}`} style={styles.mainInfo}>
+      <Link to={`/FlightDetailsPage/${id}`} style={styles.mainInfo}>
         {departure} - {arrival}
       </Link>
       <div style={styles.otherInfo}>
