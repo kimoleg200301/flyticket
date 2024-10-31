@@ -9,7 +9,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path={"/"} element={<LoginPage />} />
         <Route path={"/MainPage"} element={<MainPage />} />
-        <Route path={"/FlightDetailsPage"} element={<FlightDetailsPage departure="Нурсултан-Назарбаев" arrival="Санкт-Петербург" username="Тажи Нурдаулет" date="2023-11-10" flightNumber="A1 234" seats={{economy: 0, business: 1, firstClass: 0}} />} />
+        <Route path={"/FlightDetailsPage"} element={<FlightDetailsPage id={5} />} />
       </Routes>
     </Router>
   );

@@ -1,11 +1,13 @@
 // FlightDetailsPage.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import flightsData from '../data/flights.json';
 
-interface FlightDetailsProps {
+interface Flights {
+  id: number;
   departure: string;
   arrival: string;
-  username: string;
   date: string;
+  time: string;
   flightNumber: string;
   seats: {
     economy: number;
@@ -14,31 +16,74 @@ interface FlightDetailsProps {
   };
 }
 
-const FlightDetailsPage: React.FC<FlightDetailsProps> = ({
-  departure,
-  arrival,
-  username,
-  date,
-  flightNumber,
-  seats,
-}) => {
+interface idFlights {
+  id: number
+}
+
+const FlightDetailsPage: React.FC<idFlights> = ({ id }) => {
+  const [flights, setFlights] = useState<Flights []>([]); // сохраняем все полеты
+  const [flight, setFlight] = useState<Flights | null>(null); // сохраняем только один полет
+
+  useEffect(() => {
+    setFlights(flightsData); // данные якобы берутся из сервера
+  }, []);
+
+  const foundflight = flights.find((f: Flights) => f.id === id);
+  useEffect(() => {
+      setFlight(foundflight || null);
+  }, [flights, id])
+
+  console.log(flight);
+
   return (
     <div style={styles.pageContainer}>
       <div style={styles.detailsContainer}>
-        <h2 style={styles.route}>{departure} - {arrival}</h2>
-        <p>Имя пользователя: {username}</p>
-        <p>Дата рейса: {date}</p>
-        <p>Номер рейса: {flightNumber}</p>
-        <div style={styles.seats}>
-          <p>Места (Эконом): {seats.economy}</p>
-          <p>Места (Бизнес): {seats.business}</p>
-          <p>Места (Первый класс): {seats.firstClass}</p>
-        </div>
-        <button style={styles.button}>Забронировать рейс</button>
+        {flight ? (
+          <>
+            <h2 style={styles.route}>{flight.departure} - {flight.arrival}</h2>
+            <p>Имя пользователя: {/*flight.username*/"Тажи Нурдаулет"}</p>
+            <p>Дата рейса: {flight.date}</p>
+            <p>Номер рейса: {flight.flightNumber}</p>
+            <div style={styles.seats}>
+              <p>Места (Эконом): {flight.seats.economy}</p>
+              <p>Места (Бизнес): {flight.seats.business}</p>
+              <p>Места (Первый класс): {flight.seats.firstClass}</p>
+            </div>
+            <button style={styles.button}>Забронировать рейс</button>
+          </>
+        ) : (
+          <h2>Рейс не найден!</h2>
+        )}
       </div>
     </div>
   );
 };
+
+// const FlightDetailsPage: React.FC<Flights> = ({
+//   departure,
+//   arrival,
+//   username,
+//   date,
+//   flightNumber,
+//   seats,
+// }) => {
+//   return (
+//     <div style={styles.pageContainer}>
+//       <div style={styles.detailsContainer}>
+//         <h2 style={styles.route}>{departure} - {arrival}</h2>
+//         <p>Имя пользователя: {username}</p>
+//         <p>Дата рейса: {date}</p>
+//         <p>Номер рейса: {flightNumber}</p>
+//         <div style={styles.seats}>
+//           <p>Места (Эконом): {seats.economy}</p>
+//           <p>Места (Бизнес): {seats.business}</p>
+//           <p>Места (Первый класс): {seats.firstClass}</p>
+//         </div>
+//         <button style={styles.button}>Забронировать рейс</button>
+//       </div>
+//     </div>
+//   );
+// };
 
 const styles = {
   pageContainer: {

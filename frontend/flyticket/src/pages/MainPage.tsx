@@ -1,39 +1,45 @@
 // MainPage.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import FlightCard from '../components/FlightCard';
+import flightsData from '../data/flights.json';
 
-/* Код из ChatGPT, где происходит инициализация полученных данных в формате json
-import React, { useEffect, useState } from 'react';
+interface Flight {
+  id: number;
+  departure: string;
+  arrival: string;
+  date: string;
+  time: string;
+  flightNumber: string;
+  seats: {
+    economy: number;
+    business: number;
+    firstClass: number;
+  };
+}
 
-const FlightsList: React.FC = () => {
-  const [flights, setFlights] = useState([]);
+const MainPage: React.FC = () => {
+  const [flights, setFlights] = useState<Flight []>([]);
 
   useEffect(() => {
-    fetch('/path/to/data.json')
-      .then(response => response.json())
-      .then(data => setFlights(data));
+    setFlights(flightsData); // данные якобы берутся из сервера
   }, []);
+  console.log(flights);
 
   return (
-    <div>
-      {flights.map(flight => (
-        <div key={flight.id}>
-          <p>Рейс: {flight.flightNumber}</p>
-          <p>От: {flight.departure}</p>
-          <p>Куда: {flight.arrival}</p>
-          <p>Дата: {flight.date}</p>
-          <p>Время: {flight.time}</p>
-        </div>
-      ))}
+    <div style={styles.pageContainer}>
+      <Header />
+      <div style={styles.flightsContainer}>
+        {flights.map((FlightDetailsPage) => (
+          <FlightCard key={FlightDetailsPage.id} {...FlightDetailsPage} />
+        ))}
+      </div>
     </div>
   );
 };
 
-export default FlightsList;
-*/
 
-const flights = [
+/*const flights = [
   { id: 1, departure: 'Нурсултан Назарбаев', arrival: 'Корея', date: '2023-11-10', time: '10:00', flightNumber: 'A1 234' },
   { id: 2, departure: 'Нурсултан Назарбаев', arrival: 'Казань', date: '2023-11-12', time: '13:30', flightNumber: 'A1 543' },
   { id: 3, departure: 'Нурсултан Назарбаев', arrival: 'Сочи', date: '2023-11-15', time: '17:00', flightNumber: 'A1 838' },
@@ -57,7 +63,7 @@ const MainPage: React.FC = () => {
       </div>
     </div>
   );
-};
+};*/
 
 const styles = {
   pageContainer: {
