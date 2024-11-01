@@ -1,5 +1,5 @@
 import React from 'react';
-import '../css/LoginForm.css'; // Подключаем CSS
+import '../css/LoginForm.module.css'; // Подключаем CSS
 import Logo from '../icons/logo.svg';
 
 const LoginForm: React.FC = () => {
@@ -35,7 +35,7 @@ const LoginForm: React.FC = () => {
                     <button type="submit">Войти</button>
                 </div>
                 <div className="form-footer">
-                    Нет аккаунта? <a href="register.html">Регистрация</a>
+                    Нет аккаунта? <a href="RegisterForm">Регистрация</a>
                 </div>
             </form>
         </div>

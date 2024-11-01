@@ -1,6 +1,7 @@
 // FlightDetailsPage.tsx
 import React, { useEffect, useState } from 'react';
 import flightsData from '../data/flights.json';
+import { useParams } from 'react-router-dom';
 
 interface Flights {
   id: number;
@@ -16,22 +17,26 @@ interface Flights {
   };
 }
 
-interface idFlights {
-  id: number
-}
-
-const FlightDetailsPage: React.FC<idFlights> = ({ id }) => {
+const FlightDetailsPage: React.FC = () => {
+  const { id } = useParams<{ id: string | undefined}>();
   const [flights, setFlights] = useState<Flights []>([]); // сохраняем все полеты
   const [flight, setFlight] = useState<Flights | null>(null); // сохраняем только один полет
 
   useEffect(() => {
     setFlights(flightsData); // данные якобы берутся из сервера
+    
   }, []);
 
-  const foundflight = flights.find((f: Flights) => f.id === id);
   useEffect(() => {
+    if (flights.length > 0 && id) {
+      const foundflight = flights.find((f: Flights) => f.id === parseInt(id));
       setFlight(foundflight || null);
-  }, [flights, id])
+    }
+  }, [flights, id]);
+
+  if (!id) {
+    return <div>Error: Flight is not found!</div>
+  }
 
   console.log(flight);
 
