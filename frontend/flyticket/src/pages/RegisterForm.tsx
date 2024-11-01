@@ -1,9 +1,10 @@
 import React from 'react';
-import '../css/RegisterForm.module.css';
+import '../css/RegisterForm.css';
 import Logo from '../icons/logo.svg';
 
 const RegisterForm: React.FC = () => {
     return (
+        <div className="body_form">
         <div className="registration-form">
         {/* Логотип */}
         <img src={Logo} alt="Логотип" className="logo" />
@@ -28,6 +29,7 @@ const RegisterForm: React.FC = () => {
                 Уже есть аккаунт? <a href="LoginForm">Войти</a>
             </div>
         </form>
+    </div>
     </div>
     );
 }
