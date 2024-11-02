@@ -95,7 +95,6 @@ const styles = {
     display: 'flex',
     justifyContent: 'flex-start' as 'flex-start',
     padding: '2rem',
-    backgroundColor: '#e0f7fa',
     minHeight: '100vh',
   },
   detailsContainer: {

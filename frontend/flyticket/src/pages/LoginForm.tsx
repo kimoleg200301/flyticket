@@ -7,7 +7,7 @@ const LoginForm: React.FC = () => {
         <div className="body_form">
         <div className="login-form">
             {/* Логотип */}
-            <img src={Logo} alt="Логотип" className="logo" />
+            <img src={Logo} alt="Логотип" className="w-90 h-90 mx-auto" />
             <h2>Вход</h2>
             <form action="login.php" method="POST">
                 <div className="form-group">

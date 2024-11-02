@@ -5,6 +5,9 @@ const Header: React.FC = () => {
   return (
     <header style={styles.headerContainer}>
       <h1 style={styles.title}>Flyticket</h1>
+      <button className="bg-sky-400 hover:bg-sky-700">
+  Save changes
+</button>
     </header>
   );
 };

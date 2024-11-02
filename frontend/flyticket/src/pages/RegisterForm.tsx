@@ -7,7 +7,7 @@ const RegisterForm: React.FC = () => {
         <div className="body_form">
         <div className="registration-form">
         {/* Логотип */}
-        <img src={Logo} alt="Логотип" className="logo" />
+        <img src={Logo} alt="Логотип" className="w-90 h-90 mx-auto" />
         <h2>Регистрация</h2>
         <form action="register.php" method="POST">
             <div className="form-group">
