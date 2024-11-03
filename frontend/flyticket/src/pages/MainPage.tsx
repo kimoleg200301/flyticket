@@ -21,6 +21,25 @@ interface Flight {
 
 const MainPage: React.FC = () => {
   const [flights, setFlights] = useState<Flight []>([]);
+  const [resultSelects, setResultSelects] = useState<Flight []>([]);
+
+  const [selectDeparture, setSelectDeparture] = useState<string>('');
+  const [selectArrival, setSelectArrival] = useState<string>('');
+  const [selectDate, setSelectDate] = useState<string>('');
+
+  const handleChangeDeparture = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectDeparture(event.target.value);
+  }
+  const handleChangeArrival = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectArrival(event.target.value);
+  }
+  const handleChangeDate = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectDate(event.target.value);
+  }
+
+  useEffect(() => {
+    
+  }, []);
 
   useEffect(() => {
     setFlights(flightsData); // данные якобы берутся из сервера
@@ -54,26 +73,35 @@ const MainPage: React.FC = () => {
   return (
     <>
     <div className="h-550 sm:h-300 p-16 bg-blue-500 shadow-md flex flex-wrap sm:flex-nowrap items-center justify-center">
-      <h1 className='font-bold text-3xl text-white sm:-translate-x-4 sm:-translate-y-4'>Выбирайте нужный рейс под Ваш вкус</h1>
-      <select id="point_of_departure" className="h-70 w-350 font-bold sm:-translate-x-4 sm:-translate-y-4 bg-white border border-gray-300 rounded-16 rounded-tr-none rounded-br-none p-2">
+      <h1 className='mb-2 font-bold text-3xl text-white sm:-translate-x-4 sm:-translate-y-4'>Выбирайте нужный рейс под Ваш вкус</h1>
+      <select id="point_of_departure" onChange={handleChangeDeparture} className="h-70 w-350 font-bold sm:-translate-x-4 sm:-translate-y-4 bg-white border border-gray-300 rounded-16 sm:rounded-tr-none sm:rounded-br-none p-2">
         <option value="">Откуда</option>
-        <option value="option1">Опция 1</option>
-        <option value="option2">Опция 2</option>
-        <option value="option3">Опция 3</option>
+        {flights.map((departure_) => (
+          <>
+          <option value={`departure_${departure_.id}`}>{departure_.departure}</option>
+          </>
+        )
+        )}
       </select>
-      <select id="point_of_arrival" className="h-70 w-350 font-bold sm:-translate-x-4 sm:-translate-y-4 bg-white border border-gray-300 rounded-16 rounded-tl-none rounded-bl-none p-2">
+      <select id="point_of_arrival" onChange={handleChangeArrival} className="h-70 w-350 font-bold sm:-translate-x-4 sm:-translate-y-4 bg-white border border-gray-300 rounded-16 sm:rounded-tl-none sm:rounded-bl-none p-2">
         <option value="">Куда</option>
-        <option value="option1">Опция 1</option>
-        <option value="option2">Опция 2</option>
-        <option value="option3">Опция 3</option>
+        {flights.map((arrival_) => (
+          <>
+          <option value={`arrival_${arrival_.id}`}>{arrival_.arrival}</option>
+          </>
+        )
+        )}
       </select>
-      <select id="date_of_dispatch" className="h-70 w-350 font-bold sm:-translate-x-4 sm:-translate-y-4 bg-white border border-gray-300 rounded-16 rounded-tr-none rounded-br-none p-2">
+      <select id="date_of_dispatch" onChange={handleChangeDate} className="h-70 w-350 font-bold sm:-translate-x-4 sm:-translate-y-4 bg-white border border-gray-300 rounded-16 sm:rounded-tr-none sm:rounded-br-none p-2">
         <option value="">Когда</option>
-        <option value="option1">Опция 1</option>
-        <option value="option2">Опция 2</option>
-        <option value="option3">Опция 3</option>
+        {flights.map((date_) => (
+          <>
+          <option value={`date_${date_.id}`}>{date_.date}</option>
+          </>
+        )
+        )}
       </select>
-      <select id="date_of_departure" className="h-70 w-350 font-bold sm:-translate-x-4 sm:-translate-y-4 bg-white border border-gray-300 rounded-16 rounded-tl-none rounded-bl-none p-2">
+      <select id="date_of_departure" className="h-70 w-350 font-bold sm:-translate-x-4 sm:-translate-y-4 bg-white border border-gray-300 rounded-16 sm:rounded-tl-none sm:rounded-bl-none p-2">
         <option value="">Обратно</option>
         <option value="option1">Опция 1</option>
         <option value="option2">Опция 2</option>
@@ -82,15 +110,26 @@ const MainPage: React.FC = () => {
       <button className='h-70 w-350 ml-2 p-2 font-bold sm:-translate-x-4 sm:-translate-y-4 text-xl text-white bg-orange-500 rounded-16'>Найти рейс</button>
     </div>
     <div className='mt-6 mb-6 flex items-center justify-center'>
-      <h1 className='font-bold text-3xl'>Список всех доступных рейсов</h1>
+      {selectDeparture || selectArrival || selectDate ? (
+        <h1 className='font-bold text-3xl'>Список найденных рейсов</h1>
+      ) : (
+        <h1 className='font-bold text-3xl'>Список всех доступных рейсов</h1>
+      )
+    }
+      
     </div>
-    {flights.map((FlightDetailsPage) => (
-      <>
-      <div className='flex items-center justify-center'>
-        <FlightCard key={FlightDetailsPage.id} {...FlightDetailsPage} />
-      </div>
-      </>
-    ))}
+    {selectDeparture || selectArrival || selectDate ? (
+      <div></div>
+      ) : (
+        flights.map((FlightDetailsPage) => (
+          <>
+          <div className='flex items-center justify-center'>
+            <FlightCard key={FlightDetailsPage.id} {...FlightDetailsPage} />
+          </div>
+          </>
+        ))
+      )
+    }
     </>
   );
 };
