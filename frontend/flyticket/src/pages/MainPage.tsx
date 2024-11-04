@@ -21,7 +21,7 @@ interface Flight {
 
 const MainPage: React.FC = () => {
   const [flights, setFlights] = useState<Flight []>([]);
-  const [resultSelects, setResultSelects] = useState<Flight []>([]);
+  const [resultSelects, setResultSelects] = useState<Flight [] | null>(null);
 
   const [selectDeparture, setSelectDeparture] = useState<string>('');
   const [selectArrival, setSelectArrival] = useState<string>('');
@@ -38,13 +38,20 @@ const MainPage: React.FC = () => {
   }
 
   useEffect(() => {
-    
-  }, []);
+    console.log('selectDeparture: ' + selectDeparture);
+    setResultSelects([]);
+    if (flights.length > 0 && selectDeparture) {
+      const foundDeparture = flights.find((f: Flight) => f.departure === selectDeparture);
+      setResultSelects(foundDeparture ? [foundDeparture] : null);
+      console.log(resultSelects);
+    }
+  }, [flights, selectDeparture]);
 
   useEffect(() => {
     setFlights(flightsData); // данные якобы берутся из сервера
+    console.log(flights);
   }, []);
-  console.log(flights);
+  
 
   // return (
   //   <>
@@ -78,7 +85,7 @@ const MainPage: React.FC = () => {
         <option value="">Откуда</option>
         {flights.map((departure_) => (
           <>
-          <option value={`departure_${departure_.id}`}>{departure_.departure}</option>
+          <option value={departure_.departure}>{departure_.departure}</option>
           </>
         )
         )}
@@ -87,7 +94,7 @@ const MainPage: React.FC = () => {
         <option value="">Куда</option>
         {flights.map((arrival_) => (
           <>
-          <option value={`arrival_${arrival_.id}`}>{arrival_.arrival}</option>
+          <option value={arrival_.arrival}>{arrival_.arrival}</option>
           </>
         )
         )}
@@ -96,7 +103,7 @@ const MainPage: React.FC = () => {
         <option value="">Когда</option>
         {flights.map((date_) => (
           <>
-          <option value={`date_${date_.id}`}>{date_.date}</option>
+          <option value={date_.date}>{date_.date}</option>
           </>
         )
         )}
@@ -119,7 +126,13 @@ const MainPage: React.FC = () => {
       
     </div>
     {selectDeparture || selectArrival || selectDate ? (
-      <div></div>
+        flights.map((resultSelects) => (
+          <>
+          <div className='flex items-center justify-center'>
+            <FlightCard key={resultSelects.id} {...resultSelects} />
+          </div>
+          </>
+        ))
       ) : (
         flights.map((FlightDetailsPage) => (
           <>
