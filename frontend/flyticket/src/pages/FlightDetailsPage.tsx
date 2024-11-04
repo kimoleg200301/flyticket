@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import flightsData from '../data/flights.json';
 import { useParams } from 'react-router-dom';
+import '../css/LoginForm.css';
 
 interface Flights {
   id: number;
@@ -40,33 +41,27 @@ const FlightDetailsPage: React.FC = () => {
   console.log(flight);
 
   return (
-    <>
-    
-    </>
+    <div style={styles.pageContainer}>
+      <div style={styles.detailsContainer}>
+        {flight ? (
+          <>
+            <h2 style={styles.route}>{flight.departure} - {flight.arrival}</h2>
+            <p>Имя пользователя: {/*flight.username*/"Тажи Нурдаулет"}</p>
+            <p>Дата рейса: {flight.date}</p>
+            <p>Номер рейса: {flight.flightNumber}</p>
+            <div style={styles.seats}>
+              <p>Места (Эконом): {flight.seats.economy}</p>
+              <p>Места (Бизнес): {flight.seats.business}</p>
+              <p>Места (Первый класс): {flight.seats.firstClass}</p>
+            </div>
+            <button style={styles.button}>Забронировать рейс</button>
+          </>
+        ) : (
+          <h2>Рейс не найден!</h2>
+        )}
+      </div>
+    </div>
   );
-
-  // return (
-  //   <div style={styles.pageContainer}>
-  //     <div style={styles.detailsContainer}>
-  //       {flight ? (
-  //         <>
-  //           <h2 style={styles.route}>{flight.departure} - {flight.arrival}</h2>
-  //           <p>Имя пользователя: {/*flight.username*/"Тажи Нурдаулет"}</p>
-  //           <p>Дата рейса: {flight.date}</p>
-  //           <p>Номер рейса: {flight.flightNumber}</p>
-  //           <div style={styles.seats}>
-  //             <p>Места (Эконом): {flight.seats.economy}</p>
-  //             <p>Места (Бизнес): {flight.seats.business}</p>
-  //             <p>Места (Первый класс): {flight.seats.firstClass}</p>
-  //           </div>
-  //           <button style={styles.button}>Забронировать рейс</button>
-  //         </>
-  //       ) : (
-  //         <h2>Рейс не найден!</h2>
-  //       )}
-  //     </div>
-  //   </div>
-  // );
 };
 
 // const FlightDetailsPage: React.FC<Flights> = ({
@@ -95,39 +90,39 @@ const FlightDetailsPage: React.FC = () => {
 //   );
 // };
 
-// const styles = {
-//   pageContainer: {
-//     display: 'flex',
-//     justifyContent: 'flex-start' as 'flex-start',
-//     padding: '2rem',
-//     minHeight: '100vh',
-//   },
-//   detailsContainer: {
-//     maxWidth: '400px',
-//     padding: '1.5rem',
-//     borderRadius: '8px',
-//     backgroundColor: '#ffffff',
-//     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-//   },
-//   route: {
-//     color: '#00796b',
-//     fontSize: '1.5rem',
-//     marginBottom: '1rem',
-//   },
-//   seats: {
-//     marginTop: '1rem',
-//     marginBottom: '1.5rem',
-//   },
-//   button: {
-//     width: '100%',
-//     padding: '0.8rem',
-//     borderRadius: '4px',
-//     backgroundColor: '#00796b',
-//     color: '#ffffff',
-//     border: 'none',
-//     cursor: 'pointer',
-//     fontWeight: 'bold' as 'bold',
-//   },
-// };
+const styles = {
+  pageContainer: {
+    display: 'flex',
+    justifyContent: 'flex-start' as 'flex-start',
+    padding: '2rem',
+    minHeight: '100vh',
+  },
+  detailsContainer: {
+    maxWidth: '400px',
+    padding: '1.5rem',
+    borderRadius: '8px',
+    backgroundColor: '#ffffff',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+  },
+  route: {
+    color: '#00796b',
+    fontSize: '1.5rem',
+    marginBottom: '1rem',
+  },
+  seats: {
+    marginTop: '1rem',
+    marginBottom: '1.5rem',
+  },
+  button: {
+    width: '100%',
+    padding: '0.8rem',
+    borderRadius: '4px',
+    backgroundColor: '#357ABD',
+    color: '#ffffff',
+    border: 'none',
+    cursor: 'pointer',
+    fontWeight: 'bold' as 'bold',
+  },
+};
 
 export default FlightDetailsPage;

@@ -21,7 +21,7 @@ interface Flight {
 
 const MainPage: React.FC = () => {
   const [flights, setFlights] = useState<Flight []>([]);
-  const [resultSelects, setResultSelects] = useState<Flight [] | null>(null);
+  const [resultSelects, setResultSelects] = useState<Flight []>([]);
 
   const [selectDeparture, setSelectDeparture] = useState<string>('');
   const [selectArrival, setSelectArrival] = useState<string>('');
@@ -38,45 +38,19 @@ const MainPage: React.FC = () => {
   }
 
   useEffect(() => {
-    console.log('selectDeparture: ' + selectDeparture);
-    setResultSelects([]);
-    if (flights.length > 0 && selectDeparture) {
-      const foundDeparture = flights.find((f: Flight) => f.departure === selectDeparture);
-      setResultSelects(foundDeparture ? [foundDeparture] : null);
-      console.log(resultSelects);
-    }
-  }, [flights, selectDeparture]);
-
-  useEffect(() => {
     setFlights(flightsData); // данные якобы берутся из сервера
     console.log(flights);
   }, []);
   
+  useEffect(() => {
+    const filteredFlights = flights.filter((flight: Flight) => 
+    (selectDeparture ? flight.departure === selectDeparture : true) &&
+    (selectArrival ? flight.arrival === selectArrival : true) &&
+    (selectDate ? flight.date === selectDate : true)
+    );
+    setResultSelects(filteredFlights);
+  }, [flights, selectDeparture, selectArrival, selectDate]);
 
-  // return (
-  //   <>
-  //   <div style={styles.pageContainer}>
-  //     <Header />
-  //     <div style={styles.flightsContainer}>
-  //       {flights.map((FlightDetailsPage) => (
-  //         <FlightCard key={FlightDetailsPage.id} {...FlightDetailsPage} />
-  //       ))}
-  //     </div>
-  //   </div>
-  //   </>
-  // );
-
-  // return (
-  //   <div className="max-w-sm rounded overflow-hidden shadow-lg p-4 md:flex md:items-center bg-white">
-  //     <img className="w-full md:w-1/3" src={Logo} alt="Sample Image" />
-  //     <div className="px-4 py-2 md:w-2/3">
-  //       <h2 className="font-bold text-xl mb-2">Заголовок</h2>
-  //       <p className="text-gray-700 text-base">
-  //         Это пример адаптивной карточки, которая изменяет макет на больших экранах.
-  //       </p>
-  //     </div>
-  //   </div>
-  // );
   return (
     <>
     <div className="h-550 sm:h-300 p-16 bg-blue-500 shadow-md flex flex-wrap sm:flex-nowrap items-center justify-center">
@@ -85,7 +59,7 @@ const MainPage: React.FC = () => {
         <option value="">Откуда</option>
         {flights.map((departure_) => (
           <>
-          <option value={departure_.departure}>{departure_.departure}</option>
+          <option key={departure_.id} value={departure_.departure}>{departure_.departure}</option>
           </>
         )
         )}
@@ -94,7 +68,7 @@ const MainPage: React.FC = () => {
         <option value="">Куда</option>
         {flights.map((arrival_) => (
           <>
-          <option value={arrival_.arrival}>{arrival_.arrival}</option>
+          <option key={arrival_.id} value={arrival_.arrival}>{arrival_.arrival}</option>
           </>
         )
         )}
@@ -103,7 +77,7 @@ const MainPage: React.FC = () => {
         <option value="">Когда</option>
         {flights.map((date_) => (
           <>
-          <option value={date_.date}>{date_.date}</option>
+          <option key={date_.id} value={date_.date}>{date_.date}</option>
           </>
         )
         )}
@@ -114,7 +88,7 @@ const MainPage: React.FC = () => {
         <option value="option2">Опция 2</option>
         <option value="option3">Опция 3</option>
       </select>
-      <button className='h-70 w-350 ml-2 p-2 font-bold sm:-translate-x-4 sm:-translate-y-4 text-xl text-white bg-orange-500 rounded-16'>Найти рейс</button>
+      <button className='transform transition duration-300 hover:scale-105 h-70 w-350 ml-2 p-2 font-bold sm:-translate-x-4 sm:-translate-y-4 text-xl text-white bg-orange-500 rounded-16'>Найти рейс</button>
     </div>
     <div className='mt-6 mb-6 flex items-center justify-center'>
       {selectDeparture || selectArrival || selectDate ? (
@@ -125,38 +99,13 @@ const MainPage: React.FC = () => {
     }
       
     </div>
-    {selectDeparture || selectArrival || selectDate ? (
-        flights.map((resultSelects) => (
-          <>
+    {(selectDeparture || selectArrival || selectDate ? resultSelects : flights).map((flight) => (
           <div className='flex items-center justify-center'>
-            <FlightCard key={resultSelects.id} {...resultSelects} />
+            <FlightCard key={flight.id} {...flight} />
           </div>
-          </>
-        ))
-      ) : (
-        flights.map((FlightDetailsPage) => (
-          <>
-          <div className='flex items-center justify-center'>
-            <FlightCard key={FlightDetailsPage.id} {...FlightDetailsPage} />
-          </div>
-          </>
-        ))
-      )
-    }
+        ))}
     </>
   );
 };
-
-// const styles = {
-//   pageContainer: {
-//     backgroundColor: '#e0f7fa',
-//   },
-//   flightsContainer: {
-//     display: 'grid',
-//     gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-//     gap: '1rem',
-//     padding: '2rem',
-//   },
-// };
 
 export default MainPage;
