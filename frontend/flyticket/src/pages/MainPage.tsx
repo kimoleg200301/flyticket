@@ -24,6 +24,7 @@ const MainPage: React.FC = () => {
   const [flights, setFlights] = useState<Flight []>([]);
   const [resultSelects, setResultSelects] = useState<Flight []>([]);
 
+  /* ----- Обработчики от селект ----- */
   const [selectDeparture, setSelectDeparture] = useState<string>('');
   const [selectArrival, setSelectArrival] = useState<string>('');
   const [selectDate, setSelectDate] = useState<string>('');
@@ -36,6 +37,11 @@ const MainPage: React.FC = () => {
   }
   const handleChangeDate = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectDate(event.target.value);
+  }
+  /* -------------------- */
+
+  const settings = (event: React.MouseEvent<HTMLButtonElement>) => {
+    navigate('/SettingsPage');
   }
 
   useEffect(() => {
@@ -104,6 +110,9 @@ const MainPage: React.FC = () => {
         <option value="option3">Опция 3</option>
       </select>
       <button className='transform transition duration-300 hover:scale-105 h-70 w-350 ml-2 p-2 font-bold sm:-translate-x-4 sm:-translate-y-4 text-xl text-white bg-orange-500 rounded-16'>Найти рейс</button>
+    </div>
+    <div className='mt-6 mb-6 flex items-center justify-center'>
+      <button className='transform transition duration-300 hover:scale-105 h-70 w-350 ml-2 p-2 font-bold sm:-translate-x-4 sm:-translate-y-4 text-xl text-white bg-orange-500 rounded-16' onClick={settings}>Настройки рейсов</button>
     </div>
     <div className='mt-6 mb-6 flex items-center justify-center'>
       {selectDeparture || selectArrival || selectDate ? (

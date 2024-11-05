@@ -69,6 +69,21 @@ app.post('/flightDetailPage', authenticateToken, async function (req, res) {
   return res.json(processedData);
 });
 
+app.post('/addFlight', authenticateToken, async function (req, res) {
+  const { departure, arrival, date, time, flightNumber, economy, business, firstClass } = req.body;
+  if (departure && arrival && date && time && flightNumber && economy && business && firstClass) {
+    // тут реализовать запросы для проверки на существующее/добавление рейсов
+    res.json({
+      success: 'Рейс был успешно создан!'
+    });
+  }
+  else {
+    res.json({
+      message_error: 'Заполните все поля!'
+    });
+  }
+});
+
 async function getUser() {
   try {
     app.post('/auth', async (req, res) => {

@@ -26,24 +26,4 @@ const FlightCard: React.FC<FlightProps> = ({ id, departure, arrival, date, time 
   );
 };
 
-// const styles = {
-//   cardContainer: {
-//     padding: '1rem',
-//     borderRadius: '8px',
-//     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-//     backgroundColor: '#ffffff',
-//   },
-//   mainInfo: {
-//     color: '#00796b',
-//     fontWeight: 'bold' as 'bold',
-//     textDecoration: 'none',
-//     fontSize: '1.2rem',
-//     display: 'block',
-//     marginBottom: '0.5rem',
-//   },
-//   otherInfo: {
-//     color: '#333',
-//   },
-// };
-
 export default FlightCard;
