@@ -1,9 +1,9 @@
 // MainPage.tsx
 import React, { useEffect, useState } from 'react';
-import Header from '../components/Header';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import FlightCard from '../components/FlightCard';
-import flightsData from '../data/flights.json';
-import Logo from '../icons/logo.svg';
+//import flightsData from '../data/flights.json';
 
 interface Flight {
   id: number;
@@ -20,6 +20,7 @@ interface Flight {
 }
 
 const MainPage: React.FC = () => {
+  const navigate = useNavigate();
   const [flights, setFlights] = useState<Flight []>([]);
   const [resultSelects, setResultSelects] = useState<Flight []>([]);
 
@@ -38,8 +39,22 @@ const MainPage: React.FC = () => {
   }
 
   useEffect(() => {
-    setFlights(flightsData); // данные якобы берутся из сервера
-    console.log(flights);
+    const fetchFlights = async () => {
+      const response = await axios.post('http://localhost:5000/', '', {
+        withCredentials: true,
+      });
+      if (response.data.message) { // проверка на наличие токена либо его валидность
+        alert(response.data.message);
+        return navigate('/LoginForm');
+      }
+      else {
+        setFlights(response.data); // данные уже реально из БД
+        console.log(response.data); 
+      };
+    //setFlights(flightsData); // данные якобы берутся из сервера
+    //console.log(flights);
+    }
+    fetchFlights();
   }, []);
   
   useEffect(() => {

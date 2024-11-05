@@ -5,11 +5,11 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
 const app = express();
-const port = 3000;
+const port = 5000;
 const ip = '192.168.31.245'; // для других устройств
 
 app.use(cors({
-  origin: 'http://localhost:3001', // клиентский домен
+  origin: 'http://localhost:3000', // клиентский домен
   credentials: true, // позволяет передавать cookies
 }));
 app.use(express.json());
@@ -34,43 +34,57 @@ function authenticateToken(req, res, next) {
     return res.json({ message: 'Токен не предоставлен!', href_welcome: '../welcome.html' });
   }
 
-  jwt.verify(token, 'qwerty', (err, decoded) => {
+  jwt.verify(token, 'G9rT@q4zW1x&vP8s', (err, decoded) => {
     if (err) {
       return res.json({ message: 'Токен не валидный, либо срок его действия истек!', href_welcome: '../welcome.html' });
     }
-    req.user = decoded;
+    req.username = decoded;
     /*Логи*/
-    console.log(`req.user = decoded (${decoded})`);
+    console.log(`req.username = decoded (${decoded})`);
     /*--------*/
     next();
   });
 }
 
+app.post('/', authenticateToken, async function (req, res) {
+  const [data] = await pool.query(`select * from flights`);
+  return res.json(data);
+});
+
+app.post('/flightDetailPage', authenticateToken, async function (req, res) {
+  const [data] = await pool.query(`select * from flights`);
+  const { username } = req.username;
+  const processedData = data.map(flight => {
+    return {
+      ...flight,
+      seats: {
+        economy: flight.economy,
+        business: flight.business,
+        firstClass: flight.firstClass,
+      },
+      username
+    }
+  });
+  console.log(processedData);
+  return res.json(processedData);
+});
+
 async function getUser() {
   try {
     app.post('/auth', async (req, res) => {
-      const { login, password } = req.body;
-      //const query_password = `select password from users where password = '${password}'`;
-    
-      // con.query(query_login, (error, result) => {
-      //   if (error) return res.status(500).json({ error: 'Произошла ошибка.' });
-      //   if (result.length > 0) {
-      //     console.log(`Login: ${result}`);
-      //   }
-      // })
-
-      const [data] = await pool.query(`select * from users where name = ?`, [login]);
+      const { IIN, password } = req.body;
+      const [data] = await pool.query(`select * from users where IIN = ?`, [IIN]);
 
       if (data.length > 0) {
         if (data[0].password === password) {
-          const token = jwt.sign({name: data[0].name, role: data[0].role}, 'qwerty', { expiresIn: '1h' });
+          const token = jwt.sign({ username: data[0].username }, 'G9rT@q4zW1x&vP8s', { expiresIn: '1h' });
           console.log(`Token: ${token}`);
 
           if (req.headers['user-agent'] && req.headers['user-agent'].includes('Mozilla')) {
             res.cookie('jwt_token', token, { httpOnly: true, sameSite: 'Strict', path: '/' });
             return res.json({
               success: `Поздравляем! Вы успешно авторизованы!`,
-              login: `Ваш логин: ${login}`,
+              username: `Ваш ИИН: ${IIN}`,
               password: `Ваш пароль: ${password}`
             });
           }
@@ -80,13 +94,14 @@ async function getUser() {
         }
         else {
           res.json({
-            error: `Неверный пароль!`
+            error: `Неверный пароль!`,
           });
         }
       }
       else {
         res.json({
-          error: `Имя не найдено!`
+          error: `ИИН не найден!`,
+          message: 'IIN: ' + IIN,
         });
       }
     });
@@ -99,11 +114,14 @@ async function getUser() {
 async function addUser() {
   try {
     app.post('/create_account', async (req, res) => {
-      const { login, password, password_ } = req.body;
-      const [data_check] = await pool.query(`select name from users where name = ?`, [login])
+      const { IIN, username, password, confirmPassword } = req.body;
+      const [username_check] = await pool.query(`select username from users where username = ?`, [username]);
+      const [IIN_check] = await pool.query(`select IIN from users where IIN = ?`, [IIN]);
+      console.log('IIN' + IIN);
+      console.log('IIN_check' + IIN_check);
 
-      if (password === password_ || data_check[0] !== login) {
-        const [data] = await pool.query(`insert into users (name, password, role) values (?, ?, ?)`, [login, password, 'client']);
+      if (password === confirmPassword && !username_check[0] && !IIN_check[0]) {
+        const [data] = await pool.query(`insert into users (IIN, username, password) values (?, ?, ?)`, [IIN, username, password]);
         res.json({
           result: true,
           message: `Аккаунт создан. Авторизуйтесь под новым аккаунтом! ${data[0]}`,
@@ -111,7 +129,7 @@ async function addUser() {
       }
       else {
         res.json({
-          message: 'Пароли не совпали, либо имя пользователя уже имеется',
+          message: 'Пароли не совпали, либо имя пользователя и ИИН уже имеются',
         })
       }
     }); 
