@@ -20,6 +20,7 @@ interface Flight {
 }
 
 interface FormData {
+  id: number;
   departure: string;
   arrival: string;
   date: string;
@@ -34,16 +35,26 @@ const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
   const [flights, setFlights] = useState<Flight []>([]);
   const [resultSelects, setResultSelects] = useState<Flight []>([]);
+  const [selectedFlightId, setSelectedFlightId] = useState<number | null>(null); // чекаем id нажатого блока
   const [addFlight, setAddFlight] = useState<FormData>({
+    id: selectedFlightId ?? 0,
     departure: '',
     arrival: '',
     date: '',
     time: '',
     flightNumber: '',
-    economy: parseInt(''),
-    business: parseInt(''),
-    firstClass: parseInt(''),
+    economy: 0,
+    business: 0,
+    firstClass: 0,
   }); // useState для создания нового рейса
+
+  const handleFlightClick = (id: number) => {
+    setSelectedFlightId(id);
+    addFlight.id = id;
+    openModal();
+    console.log(`Selected flight id: ${id}`);
+  };
+  
 
   useEffect(() => {
     const fetchFlights = async () => {
@@ -85,7 +96,15 @@ const SettingsPage: React.FC = () => {
   /* ----- Логика отправки введенных данных на сервер ----- */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setAddFlight({ ...addFlight, [name]: value}); 
+      // Преобразуем числовые значения в число
+    if (name === 'economy' || name === 'business' || name === 'firstClass') {
+      setAddFlight({
+        ...addFlight,
+        [name]: value ? parseInt(value) : 0,  // если значение пустое, установим 0
+      });
+    } else {
+      setAddFlight({ ...addFlight, [name]: value });
+    }
   }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,8 +134,15 @@ const SettingsPage: React.FC = () => {
 
   /* ----- Логика отображения модального окна ----- */
   const [isModalOpen, setModalOpen] = useState(false);
-  const openModal = () => setModalOpen(true);
-  const closeModal = () => setModalOpen(false);
+  const openModal = () => {
+    setModalOpen(true);
+    console.log(addFlight.id);
+  }
+  const closeModal = () => {
+    addFlight.id = 0;
+    setModalOpen(false);
+    console.log(addFlight.id);
+  }
   /* -------------------- */
 
   /* ----- Обработчики от селект ----- */
@@ -152,7 +178,7 @@ const SettingsPage: React.FC = () => {
         <option value="">Откуда</option>
         {flights.map((departure_) => (
           <>
-          <option key={departure_.id} value={departure_.arrival}>{departure_.arrival}</option>
+          <option key={departure_.id} value={departure_.departure}>{departure_.departure}</option>
           </>
         )
         )}
@@ -196,11 +222,107 @@ const SettingsPage: React.FC = () => {
       
     </div>
     {(selectDeparture || selectArrival || selectDate ? resultSelects : flights).map((flight) => (
-      <div className='flex items-center justify-center'>
-        <FlightCardSettings key={flight.id} {...flight} />
+      <div key={flight.id} className='flex items-center justify-center' onClick={() => handleFlightClick(flight.id)}>
+        <FlightCardSettings {...flight} />
       </div>
     ))}
-    <SettingsModal isOpen={isModalOpen} onClose={closeModal}>
+    {/* модальное окно */}
+    <div>
+      {selectedFlightId ? 
+        <SettingsModal isOpen={isModalOpen} onClose={closeModal}>
+        <form className="space-y-4" onSubmit={handleSubmit}>
+        <div>
+        <label className="block text-sm font-medium text-gray-700">Откуда</label>
+        <select value={addFlight.departure} name="departure" onChange={handleChange} className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
+          <option value="">Откуда</option>
+          {cities.map((city, index) => (
+            <option key={index} value={city}>{city}</option>
+          ))}
+        </select>
+      </div>
+  
+  
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Куда</label>
+        <select value={addFlight.arrival} name="arrival" onChange={handleChange} className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
+          <option value="">Куда</option>
+          {cities.map((city, index) => (
+            <option key={index} value={city}>{city}</option>
+          ))}
+        </select>
+      </div>
+  
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Дата вылета</label>
+            <input
+              value={addFlight.date}
+              type="date"
+              name="date"
+              onChange={handleChange}
+              className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+            />
+          </div>
+  
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Время вылета</label>
+            <input
+              value={addFlight.time}
+              type="time"
+              name="time"
+              onChange={handleChange}
+              className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+            />
+          </div>
+  
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Номер рейса</label>
+            <input
+              value={addFlight.flightNumber}
+              type="text"
+              name="flightNumber"
+              onChange={handleChange}
+              placeholder='Введите на английском языке'
+              className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+            />
+          </div>
+  
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Номер места в эконом классе</label>
+            <input
+              value={addFlight.economy}
+              type="number"
+              name="economy"
+              onChange={handleChange}
+              className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+            />
+          </div>
+  
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Номер места в бизнес классе</label>
+            <input
+              value={addFlight.business}
+              type="number"
+              name="business"
+              onChange={handleChange}
+              className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+            />
+          </div>
+  
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Номер места в первом классе</label>
+            <input
+              value={addFlight.firstClass}
+              type="number"
+              name="firstClass"
+              onChange={handleChange}
+              className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+            />
+          </div>
+          <button type="submit" className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-indigo-300">Создать рейс</button>
+        </form>
+      </SettingsModal>
+      : // если нету id
+      <SettingsModal isOpen={isModalOpen} onClose={closeModal}>
       <form className="space-y-4" onSubmit={handleSubmit}>
       <div>
       <label className="block text-sm font-medium text-gray-700">Откуда</label>
@@ -286,6 +408,8 @@ const SettingsPage: React.FC = () => {
         <button type="submit" className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-indigo-300">Создать рейс</button>
       </form>
     </SettingsModal>
+      }
+    </div>
     </>
   );
 };

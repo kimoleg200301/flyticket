@@ -93,15 +93,15 @@ app.post('/flightDetailPage', authenticateToken, async function (req, res) {
 });
 
 app.post('/addFlight', authenticateToken, async function (req, res) {
-  const { departure, arrival, date, time, flightNumber, economy, business, firstClass } = req.body;
-  if (departure && arrival && date && time && flightNumber && economy && business && firstClass) {
+  const { id, departure, arrival, date, time, flightNumber, economy, business, firstClass } = req.body;
+  if (id && departure && arrival && date && time && flightNumber && economy && business && firstClass) {
     if (departure !== arrival) {
       // тут реализовать запросы для проверки на существующее/добавление рейсов
       await pool.query(`insert into flights (departure, arrival, date, time, flightNumber, economy, business, firstClass) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, [departure, arrival, date, time, flightNumber, economy, business, firstClass]);
       res.json({
         success: 'Рейс был успешно создан!'
       });
-      console.log('addFlight: ' + departure, arrival, date, time, flightNumber, economy, business, firstClass);
+      console.log('addFlight: ' + id  + departure, arrival, date, time, flightNumber, economy, business, firstClass);
     }
     else {
       res.json({
