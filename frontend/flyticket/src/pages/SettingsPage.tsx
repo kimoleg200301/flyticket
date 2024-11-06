@@ -62,8 +62,28 @@ const SettingsPage: React.FC = () => {
     fetchFlights();
   }, []);
 
+  const cities: string[] = [
+    'Астана', 'Алматы', 'Актау', 'Шымкент', 'Актобе', 'Корея', 'Казань', 'Сочи', 
+    'Москва', 'Екатеринбург', 'Новосибирск', 'Санкт-Петербург', 'Воронеж', 'Краснодар', 
+    'Нижний Новгород', 'Ростов-на-Дону', 'Пермь', 'Уфа', 'Челябинск', 'Тюмень', 
+    'Владивосток', 'Иркутск', 'Калининград', 'Самара', 'Саратов', 'Томск', 'Архангельск', 
+    'Кострома', 'Ярославль', 'Рим', 'Берлин', 'Лондон', 'Париж', 'Нью-Йорк', 'Барселона', 
+    'Мадрид', 'Стамбул', 'Пекин', 'Токио', 'Сидней', 'Дубай', 'Лос-Анджелес', 'Минск', 
+    'Киев', 'Баку', 'Ереван', 'Алма-Ата', 'Ташкент', 'Душанбе', 'Ашхабад', 'Бишкек', 
+    'Абу-Даби', 'Куала-Лумпур', 'Манила', 'Гонконг', 'Сингапур', 'Джакарта', 'Киото', 
+    'Пусан', 'Гамбург', 'Милан', 'Генуя', 'Мюнхен', 'Цюрих', 'Штутгарт', 'Лиссабон', 
+    'Осло', 'Амстердам', 'Мехико', 'Богота', 'Картахена', 'Лима', 'Сантьяго', 'Монреаль', 
+    'Ванкувер', 'Калгари', 'Торонто', 'Квебек', 'Виннипег', 'Дели', 'Мумбаи', 'Кочин', 
+    'Ченнаи', 'Бенгалуру', 'Гоа', 'Джидда', 'Рияд', 'Абиджан', 'Дакка', 'Кейптаун', 
+    'Лагос', 'Найроби', 'Мапуту', 'Абуджа', 'Сеул', 'Мельбурн', 'Аделаида', 'Брисбен', 
+    'Тасмания', 'Перт', 'Тайбэй', 'Карачи', 'Лахор', 'Исламабад', 'Дахка', 'Бухарест', 
+    'Белград', 'Прага', 'Варшава', 'Будапешт', 'Афины', 'Брюссель', 'Хельсинки', 'Вильнюс', 
+    'Рига', 'Таллинн', 'Женева', 'Ницца', 'Копенгаген', 'Белфаст', 'Бирмингем', 'Манчестер', 
+    'Глазго'
+  ];  
+
   /* ----- Логика отправки введенных данных на сервер ----- */
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setAddFlight({ ...addFlight, [name]: value}); 
   }
@@ -81,6 +101,7 @@ const SettingsPage: React.FC = () => {
           if (response.data.success) {
             alert(response.data.success);
             closeModal();
+            window.location.reload()
           }
           else {
             alert(response.data.message_error);
@@ -131,7 +152,7 @@ const SettingsPage: React.FC = () => {
         <option value="">Откуда</option>
         {flights.map((departure_) => (
           <>
-          <option key={departure_.id} value={departure_.departure}>{departure_.departure}</option>
+          <option key={departure_.id} value={departure_.arrival}>{departure_.arrival}</option>
           </>
         )
         )}
@@ -181,25 +202,26 @@ const SettingsPage: React.FC = () => {
     ))}
     <SettingsModal isOpen={isModalOpen} onClose={closeModal}>
       <form className="space-y-4" onSubmit={handleSubmit}>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Откуда</label>
-          <input
-            type="text"
-            name="departure"
-            onChange={handleChange}
-            className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-          />
-        </div>
+      <div>
+      <label className="block text-sm font-medium text-gray-700">Откуда</label>
+      <select name="departure" onChange={handleChange} className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
+        <option value="">Откуда</option>
+        {cities.map((city, index) => (
+          <option key={index} value={city}>{city}</option>
+        ))}
+      </select>
+    </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Куда</label>
-          <input
-            type="text"
-            name="arrival"
-            onChange={handleChange}
-            className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-          />
-        </div>
+
+    <div>
+      <label className="block text-sm font-medium text-gray-700">Куда</label>
+      <select name="arrival" onChange={handleChange} className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
+        <option value="">Куда</option>
+        {cities.map((city, index) => (
+          <option key={index} value={city}>{city}</option>
+        ))}
+      </select>
+    </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700">Дата вылета</label>
@@ -227,6 +249,7 @@ const SettingsPage: React.FC = () => {
             type="text"
             name="flightNumber"
             onChange={handleChange}
+            placeholder='Введите на английском языке'
             className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
           />
         </div>
@@ -234,7 +257,7 @@ const SettingsPage: React.FC = () => {
         <div>
           <label className="block text-sm font-medium text-gray-700">Номер места в эконом классе</label>
           <input
-            type="text"
+            type="number"
             name="economy"
             onChange={handleChange}
             className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
@@ -244,7 +267,7 @@ const SettingsPage: React.FC = () => {
         <div>
           <label className="block text-sm font-medium text-gray-700">Номер места в бизнес классе</label>
           <input
-            type="text"
+            type="number"
             name="business"
             onChange={handleChange}
             className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
@@ -254,7 +277,7 @@ const SettingsPage: React.FC = () => {
         <div>
           <label className="block text-sm font-medium text-gray-700">Номер места в первом классе</label>
           <input
-            type="text"
+            type="number"
             name="firstClass"
             onChange={handleChange}
             className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"

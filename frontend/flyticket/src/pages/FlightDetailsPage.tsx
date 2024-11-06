@@ -20,6 +20,10 @@ interface Flights {
   username: string,
 }
 
+interface Cities {
+  translationMap: { [key: string]: string };
+}
+
 const FlightDetailsPage: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string | undefined}>();
@@ -39,8 +43,6 @@ const FlightDetailsPage: React.FC = () => {
         setFlights(response.data); // данные уже реально из БД
         console.log(response.data);
       };
-    //setFlights(flightsData); // данные якобы берутся из сервера
-    //console.log(flights);
     }
     fetchFlights();
   }, []);
@@ -79,23 +81,135 @@ const FlightDetailsPage: React.FC = () => {
     const timeField = form.getTextField('time');
     const placeField = form.getTextField('place');
     const placeField_ = form.getTextField('place_');
-/* -------- */ // перевод на английский
-    const translationMap: { [key: string]: string } = { 
-      'Астана': 'Astana',
-      'Алматы': 'Almaty',
-      'Актау': 'Aktau',
-      'Шымкент': 'Shymkent',
-      'Актобе': 'Aktobe',
-      'Корея': 'Korea',
-      'Казань': 'Kazan',
-      'Сочи': 'Sochi',
-      'Москва': 'Moscow',
-      'Екатеринбург': 'Yekaterinburg',
-      'Новосибирск': 'Novosibirsk',
-      'Санкт-Петербург': 'Saint-Petersburg',
-      // Добавьте сюда другие переводы
-    };
-/* -------- */ // перевод каждой буквы c кириллицы на англ
+/* ---- перевод на английский ---- */
+const translationMap: { [key: string]: string } = { 
+  'Астана': 'Astana',
+  'Алматы': 'Almaty',
+  'Актау': 'Aktau',
+  'Шымкент': 'Shymkent',
+  'Актобе': 'Aktobe',
+  'Корея': 'Korea',
+  'Казань': 'Kazan',
+  'Сочи': 'Sochi',
+  'Москва': 'Moscow',
+  'Екатеринбург': 'Yekaterinburg',
+  'Новосибирск': 'Novosibirsk',
+  'Санкт-Петербург': 'Saint-Petersburg',
+  'Воронеж': 'Voronezh',
+  'Краснодар': 'Krasnodar',
+  'Нижний Новгород': 'Nizhny Novgorod',
+  'Ростов-на-Дону': 'Rostov-on-Don',
+  'Пермь': 'Perm',
+  'Уфа': 'Ufa',
+  'Челябинск': 'Chelyabinsk',
+  'Тюмень': 'Tyumen',
+  'Владивосток': 'Vladivostok',
+  'Иркутск': 'Irkutsk',
+  'Калининград': 'Kaliningrad',
+  'Самара': 'Samara',
+  'Саратов': 'Saratov',
+  'Томск': 'Tomsk',
+  'Архангельск': 'Arkhangelsk',
+  'Кострома': 'Kostroma',
+  'Ярославль': 'Yaroslavl',
+  'Рим': 'Rome',
+  'Берлин': 'Berlin',
+  'Лондон': 'London',
+  'Париж': 'Paris',
+  'Нью-Йорк': 'New York',
+  'Барселона': 'Barcelona',
+  'Мадрид': 'Madrid',
+  'Стамбул': 'Istanbul',
+  'Пекин': 'Beijing',
+  'Токио': 'Tokyo',
+  'Сидней': 'Sydney',
+  'Дубай': 'Dubai',
+  'Лос-Анджелес': 'Los Angeles',
+  'Минск': 'Minsk',
+  'Киев': 'Kyiv',
+  'Баку': 'Baku',
+  'Ереван': 'Yerevan',
+  'Алма-Ата': 'Alma-Ata',
+  'Ташкент': 'Tashkent',
+  'Душанбе': 'Dushanbe',
+  'Ашхабад': 'Ashgabat',
+  'Бишкек': 'Bishkek',
+  'Абу-Даби': 'Abu Dhabi',
+  'Куала-Лумпур': 'Kuala Lumpur',
+  'Манила': 'Manila',
+  'Гонконг': 'Hong Kong',
+  'Сингапур': 'Singapore',
+  'Джакарта': 'Jakarta',
+  'Киото': 'Kyoto',
+  'Пусан': 'Busan',
+  'Гамбург': 'Hamburg',
+  'Милан': 'Milan',
+  'Генуя': 'Genoa',
+  'Мюнхен': 'Munich',
+  'Цюрих': 'Zurich',
+  'Штутгарт': 'Stuttgart',
+  'Лиссабон': 'Lisbon',
+  'Осло': 'Oslo',
+  'Амстердам': 'Amsterdam',
+  'Мехико': 'Mexico City',
+  'Богота': 'Bogotá',
+  'Картахена': 'Cartagena',
+  'Лима': 'Lima',
+  'Сантьяго': 'Santiago',
+  'Монреаль': 'Montreal',
+  'Ванкувер': 'Vancouver',
+  'Калгари': 'Calgary',
+  'Торонто': 'Toronto',
+  'Квебек': 'Quebec',
+  'Виннипег': 'Winnipeg',
+  'Дели': 'Delhi',
+  'Мумбаи': 'Mumbai',
+  'Кочин': 'Kochi',
+  'Ченнаи': 'Chennai',
+  'Бенгалуру': 'Bengaluru',
+  'Гоа': 'Goa',
+  'Джидда': 'Jeddah',
+  'Рияд': 'Riyadh',
+  'Абиджан': 'Abidjan',
+  'Дакка': 'Dhaka',
+  'Кейптаун': 'Cape Town',
+  'Лагос': 'Lagos',
+  'Найроби': 'Nairobi',
+  'Мапуту': 'Maputo',
+  'Абуджа': 'Abuja',
+  'Сеул': 'Seoul',
+  'Мельбурн': 'Melbourne',
+  'Аделаида': 'Adelaide',
+  'Брисбен': 'Brisbane',
+  'Тасмания': 'Tasmania',
+  'Перт': 'Perth',
+  'Тайбэй': 'Taipei',
+  'Карачи': 'Karachi',
+  'Лахор': 'Lahore',
+  'Исламабад': 'Islamabad',
+  'Дахка': 'Dhaka',
+  'Бухарест': 'Bucharest',
+  'Белград': 'Belgrade',
+  'Прага': 'Prague',
+  'Варшава': 'Warsaw',
+  'Будапешт': 'Budapest',
+  'Афины': 'Athens',
+  'Брюссель': 'Brussels',
+  'Хельсинки': 'Helsinki',
+  'Вильнюс': 'Vilnius',
+  'Рига': 'Riga',
+  'Таллинн': 'Tallinn',
+  'Женева': 'Geneva',
+  'Ницца': 'Nice',
+  'Копенгаген': 'Copenhagen',
+  'Белфаст': 'Belfast',
+  'Бирмингем': 'Birmingham',
+  'Манчестер': 'Manchester',
+  'Глазго': 'Glasgow',
+  // Добавить сюда другие переводы
+};
+
+/* ---- перевод каждой буквы c кириллицы на англ ---- */
     const translateCyrillicToLatin = (text: string): string => {
       const transliterationMap: { [key: string]: string } = {
         'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd',
@@ -118,16 +232,19 @@ const FlightDetailsPage: React.FC = () => {
 /* -------- */
     const translateToEnglish = (text: string) => {
       // Разбиваем текст на слова и переводим каждое
-      return text.split(' ').map(word => translationMap[word] || word).join(' ');
+      if (translationMap !== null) {
+        // безопасно работать с translationMap
+        return text.split(' ').map(word => translationMap[word] || word).join(' ');
+      } 
     };
-    console.log(translateCyrillicToLatin(flight.username));
+
     nameField.setText(translateCyrillicToLatin(flight.username));
     nameField_.setText(translateCyrillicToLatin(flight.username));
     departureField.setText(translateToEnglish(flight.departure));
     arrivalField.setText(translateToEnglish(flight.arrival));
     dateField.setText(flight.date);
-    flightNumberField.setText(flight.flightNumber);
-    flightNumberField_.setText(flight.flightNumber);
+    flightNumberField.setText(translateCyrillicToLatin(flight.flightNumber));
+    flightNumberField_.setText(translateCyrillicToLatin(flight.flightNumber));
     timeField.setText(flight.time);
     placeField.setText(flight.seats.business.toString());
     placeField_.setText(flight.seats.business.toString());

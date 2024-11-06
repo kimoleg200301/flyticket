@@ -46,13 +46,36 @@ function authenticateToken(req, res, next) {
   });
 }
 
+app.post('/list_of_cities', authenticateToken, async function (req, res) {
+  const cities = [
+    'Астана', 'Алматы', 'Актау', 'Шымкент', 'Актобе', 'Корея', 'Казань', 'Сочи', 
+    'Москва', 'Екатеринбург', 'Новосибирск', 'Санкт-Петербург', 'Воронеж', 'Краснодар', 
+    'Нижний Новгород', 'Ростов-на-Дону', 'Пермь', 'Уфа', 'Челябинск', 'Тюмень', 
+    'Владивосток', 'Иркутск', 'Калининград', 'Самара', 'Саратов', 'Томск', 'Архангельск', 
+    'Кострома', 'Ярославль', 'Рим', 'Берлин', 'Лондон', 'Париж', 'Нью-Йорк', 'Барселона', 
+    'Мадрид', 'Стамбул', 'Пекин', 'Токио', 'Сидней', 'Дубай', 'Лос-Анджелес', 'Минск', 
+    'Киев', 'Баку', 'Ереван', 'Алма-Ата', 'Ташкент', 'Душанбе', 'Ашхабад', 'Бишкек', 
+    'Абу-Даби', 'Куала-Лумпур', 'Манила', 'Гонконг', 'Сингапур', 'Джакарта', 'Киото', 
+    'Пусан', 'Гамбург', 'Милан', 'Генуя', 'Мюнхен', 'Цюрих', 'Штутгарт', 'Лиссабон', 
+    'Осло', 'Амстердам', 'Мехико', 'Богота', 'Картахена', 'Лима', 'Сантьяго', 'Монреаль', 
+    'Ванкувер', 'Калгари', 'Торонто', 'Квебек', 'Виннипег', 'Дели', 'Мумбаи', 'Кочин', 
+    'Ченнаи', 'Бенгалуру', 'Гоа', 'Джидда', 'Рияд', 'Абиджан', 'Дакка', 'Кейптаун', 
+    'Лагос', 'Найроби', 'Мапуту', 'Абуджа', 'Сеул', 'Мельбурн', 'Аделаида', 'Брисбен', 
+    'Тасмания', 'Перт', 'Тайбэй', 'Карачи', 'Лахор', 'Исламабад', 'Дахка', 'Бухарест', 
+    'Белград', 'Прага', 'Варшава', 'Будапешт', 'Афины', 'Брюссель', 'Хельсинки', 'Вильнюс', 
+    'Рига', 'Таллинн', 'Женева', 'Ницца', 'Копенгаген', 'Белфаст', 'Бирмингем', 'Манчестер', 
+    'Глазго'
+  ];  
+  res.json(cities);
+});
+
 app.post('/', authenticateToken, async function (req, res) {
-  const [data] = await pool.query(`select * from flights`);
+  const [data] = await pool.query(`select * from flights ORDER BY id DESC`);
   return res.json(data);
 });
 
 app.post('/flightDetailPage', authenticateToken, async function (req, res) {
-  const [data] = await pool.query(`select * from flights`);
+  const [data] = await pool.query(`select * from flights ORDER BY id DESC`);
   const { username } = req.username;
   const processedData = data.map(flight => {
     return {
@@ -72,16 +95,26 @@ app.post('/flightDetailPage', authenticateToken, async function (req, res) {
 app.post('/addFlight', authenticateToken, async function (req, res) {
   const { departure, arrival, date, time, flightNumber, economy, business, firstClass } = req.body;
   if (departure && arrival && date && time && flightNumber && economy && business && firstClass) {
-    // тут реализовать запросы для проверки на существующее/добавление рейсов
-    res.json({
-      success: 'Рейс был успешно создан!'
-    });
+    if (departure !== arrival) {
+      // тут реализовать запросы для проверки на существующее/добавление рейсов
+      await pool.query(`insert into flights (departure, arrival, date, time, flightNumber, economy, business, firstClass) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, [departure, arrival, date, time, flightNumber, economy, business, firstClass]);
+      res.json({
+        success: 'Рейс был успешно создан!'
+      });
+      console.log('addFlight: ' + departure, arrival, date, time, flightNumber, economy, business, firstClass);
+    }
+    else {
+      res.json({
+        message_error: 'Город выезда и въезда не может быть один!'
+      });
+    }
   }
   else {
     res.json({
       message_error: 'Заполните все поля!'
     });
   }
+  console.log('addFlight: ' + departure, arrival, date, time, flightNumber, economy, business, firstClass);
 });
 
 async function getUser() {
