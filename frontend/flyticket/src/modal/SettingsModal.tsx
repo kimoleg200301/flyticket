@@ -23,8 +23,8 @@ const SettingsModal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
 
   return (
     <div
-      className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300 ${
-        isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+      className={`pt-16 pb-8 fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300 z-50 ${
+        isOpen ? 'opacity-100 overflow-auto' : 'opacity-0 pointer-events-none overflow-none'
       }`}
     >
       <div

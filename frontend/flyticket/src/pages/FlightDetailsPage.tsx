@@ -12,27 +12,31 @@ interface Flights {
   date: string;
   time: string;
   flightNumber: string;
-  seats: {
-    economy: number;
-    business: number;
-    firstClass: number;
-  },
-  username: string,
+  economy: number;
+  business: number;
+  firstClass: number;
+  username: string;
+  role: string;
 }
 
-interface Cities {
-  translationMap: { [key: string]: string };
+interface Token {
+  username: string;
+  role: string; // моет быть когда-нибудь понадобится...
 }
 
 const FlightDetailsPage: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string | undefined}>();
   const [flights, setFlights] = useState<Flights []>([]); // сохраняем все полеты
+  const [token, setToken] = useState<Token>({ 
+    username: '',
+    role: '',
+  }); // сохраняем данные от токена
   const [flight, setFlight] = useState<Flights | null>(null); // сохраняем только один полет
 
   useEffect(() => {
     const fetchFlights = async () => {
-      const response = await axios.post('http://localhost:5000/flightDetailPage', '', {
+      const response = await axios.post('http://localhost:5000/', '', {
         withCredentials: true,
       });
       if (response.data.message) { // проверка на наличие токена либо его валидность
@@ -40,7 +44,11 @@ const FlightDetailsPage: React.FC = () => {
         return navigate('/LoginForm');
       }
       else {
-        setFlights(response.data); // данные уже реально из БД
+        setFlights(response.data.data); // данные уже реально из БД
+        setToken({
+          username: response.data.username,
+          role: response.data.role,
+        });
         console.log(response.data);
       };
     }
@@ -238,16 +246,16 @@ const translationMap: { [key: string]: string } = {
       } 
     };
 
-    nameField.setText(translateCyrillicToLatin(flight.username));
-    nameField_.setText(translateCyrillicToLatin(flight.username));
+    nameField.setText(translateCyrillicToLatin(token.username));
+    nameField_.setText(translateCyrillicToLatin(token.username));
     departureField.setText(translateToEnglish(flight.departure));
     arrivalField.setText(translateToEnglish(flight.arrival));
     dateField.setText(flight.date);
     flightNumberField.setText(translateCyrillicToLatin(flight.flightNumber));
     flightNumberField_.setText(translateCyrillicToLatin(flight.flightNumber));
     timeField.setText(flight.time);
-    placeField.setText(flight.seats.business.toString());
-    placeField_.setText(flight.seats.business.toString());
+    placeField.setText(flight.business.toString());
+    placeField_.setText(flight.business.toString());
 
     // Сохранение изменённого PDF-документа
     const pdfBytes = await pdfDoc.save();
@@ -257,7 +265,7 @@ const translationMap: { [key: string]: string } = {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `ticket_${flight.username}.pdf`;
+    a.download = `ticket_${token.username}.pdf`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -276,14 +284,14 @@ const translationMap: { [key: string]: string } = {
         {flight ? (
           <>
             <h2 style={styles.route}>{flight.departure} - {flight.arrival}</h2>
-            <p>Имя пользователя: {flight.username}</p>
+            <p>Имя пользователя: {token.username}</p>
             <p>Дата рейса: {flight.date}</p>
             <p>Время рейса: {flight.time}</p>
             <p>Номер рейса: {flight.flightNumber}</p>
             <div style={styles.seats}>
-              <p>Места (Эконом): {flight.seats.economy}</p>
-              <p>Места (Бизнес): {flight.seats.business}</p>
-              <p>Места (Первый класс): {flight.seats.firstClass}</p>
+              <p>Места (Эконом): {flight.economy}</p>
+              <p>Места (Бизнес): {flight.business}</p>
+              <p>Места (Первый класс): {flight.firstClass}</p>
             </div>
             <button style={styles.button} onClick={handleDownloadPdf}>Забронировать рейс</button>
           </>

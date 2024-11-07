@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import FlightCardSettings from '../components/FlightCardSettings';
 import SettingsModal from '../modal/SettingsModal';
+import Header from '../components/Header';
 
 interface Flight {
   id: number;
@@ -15,6 +16,11 @@ interface Flight {
   economy: number;
   business: number;
   firstClass: number;
+}
+
+interface Token {
+  username: string;
+  role: string;
 }
 
 interface FormData {
@@ -33,6 +39,10 @@ interface FormData {
 const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
   const [flights, setFlights] = useState<Flight []>([]);
+  const [token, setToken] = useState<Token>({
+    username: '',
+    role: '',
+  });
   const [resultSelects, setResultSelects] = useState<Flight []>([]);
   const [selectedFlightId, setSelectedFlightId] = useState<number | null>(null); // чекаем id нажатого блока
   const [addFlight, setAddFlight] = useState<FormData>({
@@ -77,7 +87,11 @@ const SettingsPage: React.FC = () => {
         return navigate('/LoginForm');
       }
       else {
-        setFlights(response.data); // данные уже реально из БД
+        setFlights(response.data.data); // данные уже реально из БД
+        setToken({
+          username: response.data.username,
+          role: response.data.role,
+        });
         console.log(response.data); 
       };
     }
@@ -211,7 +225,8 @@ const SettingsPage: React.FC = () => {
 
   return (
     <>
-    <div className="h-550 sm:h-300 p-16 bg-blue-500 shadow-md flex flex-wrap sm:flex-nowrap items-center justify-center">
+    <Header username={token.username} role={token.role} />
+    <div className="h-550 mt-50 sm:h-175 p-16 bg-blue-500 shadow-md flex flex-wrap sm:flex-nowrap items-center justify-center">
       <h1 className='mb-2 font-bold text-3xl text-white sm:-translate-x-4 sm:-translate-y-4'>Настраивайте рейсы под Ваш вкус</h1>
       <select id="point_of_departure" onChange={handleChangeDeparture} className="h-70 w-350 font-bold sm:-translate-x-4 sm:-translate-y-4 bg-white border border-gray-300 rounded-16 sm:rounded-tr-none sm:rounded-br-none p-2">
         <option value="">Откуда</option>

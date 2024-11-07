@@ -6,10 +6,12 @@ const cookieParser = require('cookie-parser');
 
 const app = express();
 const port = 5000;
-const ip = '192.168.31.245'; // для других устройств
+const client_port = 3000;
+const ip = '192.168.18.12'; // для других устройств
 
 app.use(cors({
-  origin: 'http://localhost:3000', // клиентский домен
+  origin: 'http://localhost:3001', // клиентский домен
+  // origin: `http://${ip}:${client_port}`,
   credentials: true, // позволяет передавать cookies
 }));
 app.use(express.json());
@@ -38,56 +40,22 @@ function authenticateToken(req, res, next) {
     if (err) {
       return res.json({ message: 'Токен не валидный, либо срок его действия истек!', href_welcome: '../welcome.html' });
     }
-    req.username = decoded;
+    req.user = decoded;
     /*Логи*/
-    console.log(`req.username = decoded (${decoded})`);
+    console.log(`req.user = decoded (${decoded})`);
     /*--------*/
     next();
   });
 }
 
-app.post('/list_of_cities', authenticateToken, async function (req, res) {
-  const cities = [
-    'Астана', 'Алматы', 'Актау', 'Шымкент', 'Актобе', 'Корея', 'Казань', 'Сочи', 
-    'Москва', 'Екатеринбург', 'Новосибирск', 'Санкт-Петербург', 'Воронеж', 'Краснодар', 
-    'Нижний Новгород', 'Ростов-на-Дону', 'Пермь', 'Уфа', 'Челябинск', 'Тюмень', 
-    'Владивосток', 'Иркутск', 'Калининград', 'Самара', 'Саратов', 'Томск', 'Архангельск', 
-    'Кострома', 'Ярославль', 'Рим', 'Берлин', 'Лондон', 'Париж', 'Нью-Йорк', 'Барселона', 
-    'Мадрид', 'Стамбул', 'Пекин', 'Токио', 'Сидней', 'Дубай', 'Лос-Анджелес', 'Минск', 
-    'Киев', 'Баку', 'Ереван', 'Алма-Ата', 'Ташкент', 'Душанбе', 'Ашхабад', 'Бишкек', 
-    'Абу-Даби', 'Куала-Лумпур', 'Манила', 'Гонконг', 'Сингапур', 'Джакарта', 'Киото', 
-    'Пусан', 'Гамбург', 'Милан', 'Генуя', 'Мюнхен', 'Цюрих', 'Штутгарт', 'Лиссабон', 
-    'Осло', 'Амстердам', 'Мехико', 'Богота', 'Картахена', 'Лима', 'Сантьяго', 'Монреаль', 
-    'Ванкувер', 'Калгари', 'Торонто', 'Квебек', 'Виннипег', 'Дели', 'Мумбаи', 'Кочин', 
-    'Ченнаи', 'Бенгалуру', 'Гоа', 'Джидда', 'Рияд', 'Абиджан', 'Дакка', 'Кейптаун', 
-    'Лагос', 'Найроби', 'Мапуту', 'Абуджа', 'Сеул', 'Мельбурн', 'Аделаида', 'Брисбен', 
-    'Тасмания', 'Перт', 'Тайбэй', 'Карачи', 'Лахор', 'Исламабад', 'Дахка', 'Бухарест', 
-    'Белград', 'Прага', 'Варшава', 'Будапешт', 'Афины', 'Брюссель', 'Хельсинки', 'Вильнюс', 
-    'Рига', 'Таллинн', 'Женева', 'Ницца', 'Копенгаген', 'Белфаст', 'Бирмингем', 'Манчестер', 
-    'Глазго'
-  ];  
-  res.json(cities);
-});
-
 app.post('/', authenticateToken, async function (req, res) {
   const [data] = await pool.query(`select * from flights ORDER BY id DESC`);
-  return res.json(data);
-});
-
-app.post('/flightDetailPage', authenticateToken, async function (req, res) {
-  const [data] = await pool.query(`select * from flights ORDER BY id DESC`);
-  const { username } = req.username;
-  const processedData = data.map(flight => {
-    return {
-      ...flight,
-      seats: {
-        economy: flight.economy,
-        business: flight.business,
-        firstClass: flight.firstClass,
-      },
-      username
-    }
-  });
+  const { username, role } = req.user;
+  const processedData = {
+    data: data,
+    username: username,
+    role: role,
+  }
   console.log(processedData);
   return res.json(processedData);
 });
@@ -141,7 +109,7 @@ async function getUser() {
 
       if (data.length > 0) {
         if (data[0].password === password) {
-          const token = jwt.sign({ username: data[0].username }, 'G9rT@q4zW1x&vP8s', { expiresIn: '1h' });
+          const token = jwt.sign({ username: data[0].username, role: data[0].role }, 'G9rT@q4zW1x&vP8s', { expiresIn: '1h' });
           console.log(`Token: ${token}`);
 
           if (req.headers['user-agent'] && req.headers['user-agent'].includes('Mozilla')) {
