@@ -93,12 +93,20 @@ app.post('/flightDetailPage', authenticateToken, async function (req, res) {
 });
 
 app.post('/addFlight', authenticateToken, async function (req, res) {
-  const { id, departure, arrival, date, time, flightNumber, economy, business, firstClass } = req.body;
+  const { id, isDelete, departure, arrival, date, time, flightNumber, economy, business, firstClass } = req.body;
   if (id !== 0) {
-    await pool.query(`UPDATE flights SET departure = ?, arrival = ?, date = ?, time = ?, flightNumber = ?, economy = ?, business = ?, firstClass = ? WHERE id = ?`, [departure, arrival, date, time, flightNumber, economy, business, firstClass, id]);
-    res.json({
-      success: 'Рейс был успешно обновлен!'
-    });
+    if (isDelete) {
+      await pool.query(`DELETE FROM flights WHERE id = ?`, [id]);
+      res.json({
+        success: 'Рейс был успешно удален!'
+      });
+    }
+    else {
+      await pool.query(`UPDATE flights SET departure = ?, arrival = ?, date = ?, time = ?, flightNumber = ?, economy = ?, business = ?, firstClass = ? WHERE id = ?`, [departure, arrival, date, time, flightNumber, economy, business, firstClass, id]);
+      res.json({
+        success: 'Рейс был успешно обновлен!'
+      });
+    }
   }
   else {
     if (departure && arrival && date && time && flightNumber && economy && business && firstClass) {

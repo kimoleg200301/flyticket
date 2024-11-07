@@ -19,6 +19,7 @@ interface Flight {
 
 interface FormData {
   id: number;
+  isDelete: boolean;
   departure: string;
   arrival: string;
   date: string;
@@ -36,6 +37,7 @@ const SettingsPage: React.FC = () => {
   const [selectedFlightId, setSelectedFlightId] = useState<number | null>(null); // чекаем id нажатого блока
   const [addFlight, setAddFlight] = useState<FormData>({
     id: selectedFlightId ?? 0,
+    isDelete: false,
     departure: '',
     arrival: '',
     date: '',
@@ -47,13 +49,23 @@ const SettingsPage: React.FC = () => {
   }); // useState для создания нового рейса
   const [isUpdate, setIsUpdate] = useState<boolean>(false);
 
-  const handleFlightClick = (id: number) => {
+  const handleFlightClick = (id: number) => { //  функция для нажатия на блок
     setSelectedFlightId(id);
     addFlight.id = id;
     openModal();
     console.log(`Selected flight id: ${id}`);
   };
-  
+
+  const deleteFlightClick = () => { //  удаляем рейс
+    /* eslint-disable-next-line no-restricted-globals */
+    let confirmDelete = confirm('Вы точно хотите удалить данный рейс?');
+    if (confirmDelete) {
+      return addFlight.isDelete = true;
+    }
+    else {
+      return
+    }
+  };
 
   useEffect(() => {
     const fetchFlights = async () => {
@@ -119,6 +131,7 @@ const SettingsPage: React.FC = () => {
           if (response.data.success) {
             alert(response.data.success);
             closeModal();
+            addFlight.isDelete = false;
             window.location.reload();
           }
           else {
@@ -153,19 +166,21 @@ const SettingsPage: React.FC = () => {
     setModalOpen(true);
   }
   const closeModal = () => {
-    setIsUpdate(false);
-    addFlight.id = 0;
-    addFlight.departure = '';
-    addFlight.arrival = '';
-    addFlight.date = '';
-    addFlight.time = '';
-    addFlight.flightNumber = '';
-    addFlight.economy = 0;
-    addFlight.business = 0;
-    addFlight.firstClass = 0;
-    console.log('false: ' + addFlight.id);
-    console.log('false: ' + addFlight.departure);
     setModalOpen(false);
+    setTimeout(() => {
+      setIsUpdate(false);
+      addFlight.id = 0;
+      addFlight.departure = '';
+      addFlight.arrival = '';
+      addFlight.date = '';
+      addFlight.time = '';
+      addFlight.flightNumber = '';
+      addFlight.economy = 0;
+      addFlight.business = 0;
+      addFlight.firstClass = 0;
+      console.log('false: ' + addFlight.id);
+      console.log('false: ' + addFlight.departure); 
+    }, 120); // Задержка 120 мс во время закрытия анимации
   }
   /* -------------------- */
 
@@ -341,12 +356,12 @@ const SettingsPage: React.FC = () => {
             />
           </div>
             <button type="submit" className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-indigo-300">{isUpdate ? "Обновить рейс" : "Создать рейс"}</button>
+            {isUpdate? 
+            <button onClick={deleteFlightClick} className="mt-4 w-full bg-gradient-to-r from-red-500 to-indigo-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-indigo-300">Удалить рейс</button>
+            :
+            <div></div>
+            }
         </form>
-        {isUpdate? 
-          <button /* onClick={deleteFlight} */ className="mt-4 w-full bg-gradient-to-r from-red-500 to-indigo-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-indigo-300">Удалить рейс</button>
-        :
-        <div></div>
-        }
       </SettingsModal>
     </div>
     </>

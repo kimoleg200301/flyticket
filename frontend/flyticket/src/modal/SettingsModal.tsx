@@ -9,11 +9,11 @@ interface ModalProps {
 const SettingsModal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   useEffect(() => {
     // Убираем скроллинг при открытии модального окна
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto'; // Восстанавливаем скроллинг при закрытии
-    }
+    // if (isOpen) {
+    //   document.body.style.overflow = 'hidden';
+    // } else {
+    //   document.body.style.overflow = 'auto'; // Восстанавливаем скроллинг при закрытии
+    // }
 
     // Очистка эффекта при размонтировании или закрытии модального окна
     return () => {
