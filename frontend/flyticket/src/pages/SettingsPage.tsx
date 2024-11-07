@@ -12,11 +12,9 @@ interface Flight {
   date: string;
   time: string;
   flightNumber: string;
-  seats: {
-    economy: number;
-    business: number;
-    firstClass: number;
-  };
+  economy: number;
+  business: number;
+  firstClass: number;
 }
 
 interface FormData {
@@ -47,6 +45,7 @@ const SettingsPage: React.FC = () => {
     business: 0,
     firstClass: 0,
   }); // useState для создания нового рейса
+  const [isUpdate, setIsUpdate] = useState<boolean>(false);
 
   const handleFlightClick = (id: number) => {
     setSelectedFlightId(id);
@@ -120,7 +119,7 @@ const SettingsPage: React.FC = () => {
           if (response.data.success) {
             alert(response.data.success);
             closeModal();
-            window.location.reload()
+            window.location.reload();
           }
           else {
             alert(response.data.message_error);
@@ -135,13 +134,38 @@ const SettingsPage: React.FC = () => {
   /* ----- Логика отображения модального окна ----- */
   const [isModalOpen, setModalOpen] = useState(false);
   const openModal = () => {
+    setIsUpdate(false);
+    const flight = flights.find(flight => flight.id === addFlight.id);
+    if (flight) {
+      addFlight.departure = flight.departure || '';
+      addFlight.arrival = flight.arrival || '';
+      addFlight.date = flight.date || '';
+      addFlight.time = flight.time || '';
+      addFlight.flightNumber = flight.flightNumber || '';
+      addFlight.economy = flight.economy ?? 0;
+      addFlight.business = flight.business ?? 0;
+      addFlight.firstClass = flight.firstClass ?? 0;
+      setIsUpdate(true);
+    }
+    console.log('true selectedFlightId: ' + selectedFlightId);
+    console.log('true addFlight.id: ' + addFlight.id);
+    console.log('true: ' + addFlight.departure);
     setModalOpen(true);
-    console.log(addFlight.id);
   }
   const closeModal = () => {
+    setIsUpdate(false);
     addFlight.id = 0;
+    addFlight.departure = '';
+    addFlight.arrival = '';
+    addFlight.date = '';
+    addFlight.time = '';
+    addFlight.flightNumber = '';
+    addFlight.economy = 0;
+    addFlight.business = 0;
+    addFlight.firstClass = 0;
+    console.log('false: ' + addFlight.id);
+    console.log('false: ' + addFlight.departure);
     setModalOpen(false);
-    console.log(addFlight.id);
   }
   /* -------------------- */
 
@@ -228,11 +252,10 @@ const SettingsPage: React.FC = () => {
     ))}
     {/* модальное окно */}
     <div>
-      {selectedFlightId ? 
-        <SettingsModal isOpen={isModalOpen} onClose={closeModal}>
+      <SettingsModal isOpen={isModalOpen} onClose={closeModal}>
         <form className="space-y-4" onSubmit={handleSubmit}>
         <div>
-        <label className="block text-sm font-medium text-gray-700">Откуда</label>
+        <label className="block text-sm font-medium text-gray-700">*Откуда</label>
         <select value={addFlight.departure} name="departure" onChange={handleChange} className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
           <option value="">Откуда</option>
           {cities.map((city, index) => (
@@ -240,7 +263,6 @@ const SettingsPage: React.FC = () => {
           ))}
         </select>
       </div>
-  
   
       <div>
         <label className="block text-sm font-medium text-gray-700">Куда</label>
@@ -318,97 +340,14 @@ const SettingsPage: React.FC = () => {
               className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
             />
           </div>
-          <button type="submit" className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-indigo-300">Создать рейс</button>
+            <button type="submit" className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-indigo-300">{isUpdate ? "Обновить рейс" : "Создать рейс"}</button>
         </form>
+        {isUpdate? 
+          <button /* onClick={deleteFlight} */ className="mt-4 w-full bg-gradient-to-r from-red-500 to-indigo-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-indigo-300">Удалить рейс</button>
+        :
+        <div></div>
+        }
       </SettingsModal>
-      : // если нету id
-      <SettingsModal isOpen={isModalOpen} onClose={closeModal}>
-      <form className="space-y-4" onSubmit={handleSubmit}>
-      <div>
-      <label className="block text-sm font-medium text-gray-700">Откуда</label>
-      <select name="departure" onChange={handleChange} className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
-        <option value="">Откуда</option>
-        {cities.map((city, index) => (
-          <option key={index} value={city}>{city}</option>
-        ))}
-      </select>
-    </div>
-
-
-    <div>
-      <label className="block text-sm font-medium text-gray-700">Куда</label>
-      <select name="arrival" onChange={handleChange} className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
-        <option value="">Куда</option>
-        {cities.map((city, index) => (
-          <option key={index} value={city}>{city}</option>
-        ))}
-      </select>
-    </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Дата вылета</label>
-          <input
-            type="date"
-            name="date"
-            onChange={handleChange}
-            className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Время вылета</label>
-          <input
-            type="time"
-            name="time"
-            onChange={handleChange}
-            className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Номер рейса</label>
-          <input
-            type="text"
-            name="flightNumber"
-            onChange={handleChange}
-            placeholder='Введите на английском языке'
-            className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Номер места в эконом классе</label>
-          <input
-            type="number"
-            name="economy"
-            onChange={handleChange}
-            className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Номер места в бизнес классе</label>
-          <input
-            type="number"
-            name="business"
-            onChange={handleChange}
-            className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Номер места в первом классе</label>
-          <input
-            type="number"
-            name="firstClass"
-            onChange={handleChange}
-            className="h-10 mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-          />
-        </div>
-        <button type="submit" className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold py-2 px-6 rounded-lg shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-indigo-300">Создать рейс</button>
-      </form>
-    </SettingsModal>
-      }
     </div>
     </>
   );
