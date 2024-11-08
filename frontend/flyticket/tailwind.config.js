@@ -49,6 +49,7 @@ module.exports = {
       },
       colors: {
         customGray: '#eff1f4',
+        customBlue: '#2C3E50',
       },
       keyframes: {
         slideInFromRight: {

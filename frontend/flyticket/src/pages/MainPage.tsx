@@ -128,7 +128,7 @@ const MainPage: React.FC = () => {
     </div>
     <div className='mt-6 mb-6 flex items-center justify-center'>
       {selectDeparture || selectArrival || selectDate ? (
-        <h1 className='font-bold text-3xl'>Список найденных рейсов</h1>
+        <h1 className='font-bold text-3xl text-customBlue'>Список найденных рейсов</h1>
       ) : (
         <h1 className='font-bold text-3xl'>Список всех доступных рейсов</h1>
       )
