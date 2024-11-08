@@ -10,7 +10,7 @@ const client_port = 3000;
 const ip = '192.168.18.12'; // для других устройств
 
 app.use(cors({
-  origin: 'http://localhost:3001', // клиентский домен
+  origin: 'http://localhost:3000', // клиентский домен
   // origin: `http://${ip}:${client_port}`,
   credentials: true, // позволяет передавать cookies
 }));
@@ -149,11 +149,15 @@ async function addUser() {
       const { IIN, username, password, confirmPassword } = req.body;
       const [username_check] = await pool.query(`select username from users where username = ?`, [username]);
       const [IIN_check] = await pool.query(`select IIN from users where IIN = ?`, [IIN]);
-      console.log('IIN' + IIN);
-      console.log('IIN_check' + IIN_check);
+      let role = 'client';
+      console.log('IIN ' + IIN);
+      console.log('IIN_check ' + IIN_check);
 
       if (password === confirmPassword && !username_check[0] && !IIN_check[0]) {
-        const [data] = await pool.query(`insert into users (IIN, username, password) values (?, ?, ?)`, [IIN, username, password]);
+        if (IIN === '012345678912') { // под иином 012345678912 регистрируется админ
+          role = 'admin';
+        }
+        const [data] = await pool.query(`insert into users (IIN, username, role, password) values (?, ?, ?, ?)`, [IIN, username, role, password]);
         res.json({
           result: true,
           message: `Аккаунт создан. Авторизуйтесь под новым аккаунтом! ${data[0]}`,

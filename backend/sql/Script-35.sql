@@ -30,5 +30,6 @@ create table users (
 	id int primary key auto_increment,
 	IIN varchar(12) not null unique,
 	username varchar(255) not null,
+    role varchar(255) not null,
 	password varchar(255) not null
 );
