@@ -20,14 +20,17 @@ interface Flights {
 interface Token {
   username: string;
   role: string;
+  right: boolean;
 }
 
 const MainPage: React.FC = () => {
   const navigate = useNavigate();
+  const onPage = 'MainPage';
   const [flights, setFlights] = useState<Flights []>([]);
   const [token, setToken] = useState<Token>({
     username: '',
     role: '',
+    right: false,
   });
   const [resultSelects, setResultSelects] = useState<Flights []>([]);
 
@@ -53,7 +56,7 @@ const MainPage: React.FC = () => {
 
   useEffect(() => {
     const fetchFlights = async () => {
-      const response = await axios.post('http://localhost:5000/', '', {
+      const response = await axios.post('http://localhost:5000/', onPage, {
         withCredentials: true,
       });
       if (response.data.message) { // проверка на наличие токена либо его валидность
@@ -65,6 +68,7 @@ const MainPage: React.FC = () => {
         setToken({
           username: response.data.username,
           role: response.data.role,
+          right: response.data.right,
         });
         console.log(response.data); 
       };
@@ -124,7 +128,11 @@ const MainPage: React.FC = () => {
       <button className='transform transition duration-300 hover:scale-105 h-70 w-350 ml-2 p-2 font-bold sm:-translate-x-4 sm:-translate-y-4 text-xl text-white bg-orange-500 rounded-16'>Найти рейс</button>
     </div>
     <div className='mt-6 mb-6 flex items-center justify-center'>
+      {token.right ?
       <button className='transform transition duration-300 hover:scale-105 h-70 w-350 ml-2 p-2 font-bold sm:-translate-x-4 sm:-translate-y-4 text-xl text-white bg-orange-500 rounded-16' onClick={settings}>Настройки рейсов</button>
+      :
+      <div></div>
+      }
     </div>
     <div className='mt-6 mb-6 flex items-center justify-center'>
       {selectDeparture || selectArrival || selectDate ? (

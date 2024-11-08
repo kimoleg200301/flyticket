@@ -33,12 +33,12 @@ function authenticateToken(req, res, next) {
   console.log(token);
   /*--------*/
   if (!token) {
-    return res.json({ message: 'Токен не предоставлен!', href_welcome: '../welcome.html' });
+    return res.json({ message: 'Токен не предоставлен!' });
   }
 
   jwt.verify(token, 'G9rT@q4zW1x&vP8s', (err, decoded) => {
     if (err) {
-      return res.json({ message: 'Токен не валидный, либо срок его действия истек!', href_welcome: '../welcome.html' });
+      return res.json({ message: 'Токен не валидный, либо срок его действия истек!' });
     }
     req.user = decoded;
     /*Логи*/
@@ -48,19 +48,36 @@ function authenticateToken(req, res, next) {
   });
 }
 
-app.post('/', authenticateToken, async function (req, res) {
+function rightToSettings(req, res, next) {
+  const role = req.user.role;
+  req.right = role === 'admin';
+  if (!req.right) {
+    return res.json({ message: 'Ошибка! У вас не имеется прав на настройки рейсов!' });
+  }
+  next();
+} 
+
+app.post('/', authenticateToken, rightToSettings, async function (req, res) {
+  const onPage = req.body.page;
+  console.log(onPage);
   const [data] = await pool.query(`select * from flights ORDER BY id DESC`);
   const { username, role } = req.user;
-  const processedData = {
-    data: data,
-    username: username,
-    role: role,
+  if (onPage === 'SettingsPage') {
+    return res.json({ message_right: 'Ошибка! У вас не имеется прав на настройки рейсов!' });
   }
-  console.log(processedData);
-  return res.json(processedData);
+  else {
+    const processedData = {
+      data: data,
+      username: username,
+      role: role,
+      right: right,
+    }
+    console.log(processedData);
+    return res.json(processedData);
+  }
 });
 
-app.post('/addFlight', authenticateToken, async function (req, res) {
+app.post('/addFlight', authenticateToken, rightToSettings, async function (req, res) {
   const { id, isDelete, departure, arrival, date, time, flightNumber, economy, business, firstClass } = req.body;
   if (id !== 0) {
     if (isDelete) {

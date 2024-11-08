@@ -21,6 +21,7 @@ interface Flight {
 interface Token {
   username: string;
   role: string;
+  right: boolean;
 }
 
 interface FormData {
@@ -38,10 +39,12 @@ interface FormData {
 
 const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
+  const onPage = {page: 'SettingsPage'};
   const [flights, setFlights] = useState<Flight []>([]);
   const [token, setToken] = useState<Token>({
     username: '',
     role: '',
+    right: false,
   });
   const [resultSelects, setResultSelects] = useState<Flight []>([]);
   const [selectedFlightId, setSelectedFlightId] = useState<number | null>(null); // чекаем id нажатого блока
@@ -79,20 +82,41 @@ const SettingsPage: React.FC = () => {
 
   useEffect(() => {
     const fetchFlights = async () => {
-      const response = await axios.post('http://localhost:5000/', '', {
+      const response = await axios.post('http://localhost:5000/', onPage, {
         withCredentials: true,
       });
       if (response.data.message) { // проверка на наличие токена либо его валидность
         alert(response.data.message);
         return navigate('/LoginForm');
       }
+      // else if (response.data.message_right) { // проверка на права настроек
+      //   alert(response.data.message_right);
+      //   return navigate('/MainPage');
+      // }
       else {
-        setFlights(response.data.data); // данные уже реально из БД
-        setToken({
-          username: response.data.username,
-          role: response.data.role,
-        });
-        console.log(response.data); 
+        if (!response.data.message_right) {
+          setFlights(response.data.data); // данные уже реально из БД
+          setToken({
+            username: response.data.username,
+            role: response.data.role,
+            right: response.data.right,
+          });
+          console.log(response.data); 
+        }
+        else {
+          setFlights([{
+            id: 0,
+            departure: '',
+            arrival: '',
+            date: '',
+            time: '',
+            flightNumber: '',
+            economy: 0,
+            business: 0,
+            firstClass: 0,
+          }]);
+          alert(response.data.message_right);
+        }
       };
     }
     fetchFlights();

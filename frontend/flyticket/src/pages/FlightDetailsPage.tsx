@@ -15,8 +15,6 @@ interface Flights {
   economy: number;
   business: number;
   firstClass: number;
-  username: string;
-  role: string;
 }
 
 interface Token {
