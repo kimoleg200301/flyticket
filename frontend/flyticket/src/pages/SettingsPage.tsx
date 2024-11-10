@@ -40,7 +40,39 @@ interface FormData {
 const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
   const onPage = {page: 'SettingsPage'};
-  const [flights, setFlights] = useState<Flight []>([]);
+  const [flights, setFlights] = useState<Flight []>([{
+    id: 0,
+    departure: '',
+    arrival: '',
+    date: '',
+    time: '',
+    flightNumber: '',
+    economy: 0,
+    business: 0,
+    firstClass: 0,
+  },
+  {
+    id: 0,
+    departure: '',
+    arrival: '',
+    date: '',
+    time: '',
+    flightNumber: '',
+    economy: 0,
+    business: 0,
+    firstClass: 0,
+  },
+  {
+    id: 0,
+    departure: '',
+    arrival: '',
+    date: '',
+    time: '',
+    flightNumber: '',
+    economy: 0,
+    business: 0,
+    firstClass: 0,
+  }]);
   const [token, setToken] = useState<Token>({
     username: '',
     role: '',
@@ -94,29 +126,13 @@ const SettingsPage: React.FC = () => {
       //   return navigate('/MainPage');
       // }
       else {
-        if (!response.data.message_right) {
-          setFlights(response.data.data); // данные уже реально из БД
-          setToken({
-            username: response.data.username,
-            role: response.data.role,
-            right: response.data.right,
-          });
-          console.log(response.data); 
-        }
-        else {
-          setFlights([{
-            id: 0,
-            departure: '',
-            arrival: '',
-            date: '',
-            time: '',
-            flightNumber: '',
-            economy: 0,
-            business: 0,
-            firstClass: 0,
-          }]);
-          alert(response.data.message_right);
-        }
+        setFlights(response.data.data); // данные уже реально из БД
+        setToken({
+          username: response.data.username,
+          role: response.data.role,
+          right: response.data.right,
+        });
+        console.log(response.data);
       };
     }
     fetchFlights();

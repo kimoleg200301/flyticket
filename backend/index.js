@@ -41,6 +41,9 @@ function authenticateToken(req, res, next) {
       return res.json({ message: 'Токен не валидный, либо срок его действия истек!' });
     }
     req.user = decoded;
+    if (req.user === undefined) {
+      return res.json({ message:  'Данные токена не получены!' });
+    }
     /*Логи*/
     console.log(`req.user = decoded (${decoded})`);
     /*--------*/
@@ -51,30 +54,24 @@ function authenticateToken(req, res, next) {
 function rightToSettings(req, res, next) {
   const role = req.user.role;
   req.right = role === 'admin';
-  if (!req.right) {
+  if (!req.right && req.body.page === 'SettingsPage') {
     return res.json({ message: 'Ошибка! У вас не имеется прав на настройки рейсов!' });
   }
   next();
 } 
 
 app.post('/', authenticateToken, rightToSettings, async function (req, res) {
-  const onPage = req.body.page;
   console.log(onPage);
   const [data] = await pool.query(`select * from flights ORDER BY id DESC`);
   const { username, role } = req.user;
-  if (onPage === 'SettingsPage') {
-    return res.json({ message_right: 'Ошибка! У вас не имеется прав на настройки рейсов!' });
+  const processedData = {
+    data: data,
+    username: username,
+    role: role,
+    right: req.right,
   }
-  else {
-    const processedData = {
-      data: data,
-      username: username,
-      role: role,
-      right: right,
-    }
-    console.log(processedData);
-    return res.json(processedData);
-  }
+  console.log(processedData);
+  return res.json(processedData);
 });
 
 app.post('/addFlight', authenticateToken, rightToSettings, async function (req, res) {
@@ -82,35 +79,40 @@ app.post('/addFlight', authenticateToken, rightToSettings, async function (req, 
   if (id !== 0) {
     if (isDelete) {
       await pool.query(`DELETE FROM flights WHERE id = ?`, [id]);
-      res.json({
+      return res.json({
         success: 'Рейс был успешно удален!'
       });
     }
     else {
       await pool.query(`UPDATE flights SET departure = ?, arrival = ?, date = ?, time = ?, flightNumber = ?, economy = ?, business = ?, firstClass = ? WHERE id = ?`, [departure, arrival, date, time, flightNumber, economy, business, firstClass, id]);
-      res.json({
+      return res.json({
         success: 'Рейс был успешно обновлен!'
       });
     }
+  }
+  else if (id === 0) {
+    return res.json({
+      success: 'Рейс является неккоректным!'
+    });
   }
   else {
     if (departure && arrival && date && time && flightNumber && economy && business && firstClass) {
       if (departure !== arrival) {
         // тут реализовать запросы для проверки на существующее/добавление рейсов
         await pool.query(`insert into flights (departure, arrival, date, time, flightNumber, economy, business, firstClass) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`, [departure, arrival, date, time, flightNumber, economy, business, firstClass]);
-        res.json({
+        return res.json({
           success: 'Рейс был успешно создан!'
         });
         console.log('addFlight: ' + id  + departure, arrival, date, time, flightNumber, economy, business, firstClass);
       }
       else {
-        res.json({
+        return res.json({
           message_error: 'Город выезда и въезда не может быть один!'
         });
       }
     }
     else {
-      res.json({
+      return res.json({
         message_error: 'Заполните все поля!'
       });
     }
