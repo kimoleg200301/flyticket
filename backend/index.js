@@ -61,7 +61,6 @@ function rightToSettings(req, res, next) {
 } 
 
 app.post('/', authenticateToken, rightToSettings, async function (req, res) {
-  console.log(onPage);
   const [data] = await pool.query(`select * from flights ORDER BY id DESC`);
   const { username, role } = req.user;
   const processedData = {
@@ -90,11 +89,11 @@ app.post('/addFlight', authenticateToken, rightToSettings, async function (req, 
       });
     }
   }
-  else if (id === 0) {
-    return res.json({
-      success: 'Рейс является неккоректным!'
-    });
-  }
+  // else if (id === 0) {
+  //   return res.json({
+  //     success: 'Рейс является неккоректным!'
+  //   });
+  // }
   else {
     if (departure && arrival && date && time && flightNumber && economy && business && firstClass) {
       if (departure !== arrival) {
