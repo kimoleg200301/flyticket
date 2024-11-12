@@ -36,28 +36,6 @@ const MainPage: React.FC = () => {
     economy: 0,
     business: 0,
     firstClass: 0,
-  },
-  {
-    id: 0,
-    departure: '',
-    arrival: '',
-    date: '',
-    time: '',
-    flightNumber: '',
-    economy: 0,
-    business: 0,
-    firstClass: 0,
-  },
-  {
-    id: 0,
-    departure: '',
-    arrival: '',
-    date: '',
-    time: '',
-    flightNumber: '',
-    economy: 0,
-    business: 0,
-    firstClass: 0,
   }],
 );
   const [token, setToken] = useState<Token>({
