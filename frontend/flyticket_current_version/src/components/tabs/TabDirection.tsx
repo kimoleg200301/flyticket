@@ -17,10 +17,22 @@ interface Flights {
   business: number;
   firstClass: number;
 }
-interface Sorted {
+
+interface SortedDeparture {
   id: number;
-  value: string;
+  departure: string;
 }
+
+interface SortedArrival {
+  id: number;
+  arrival: string;
+}
+
+interface SortedDate {
+  id: number;
+  date: string;
+}
+
 interface Token {
   username: string;
   role: string;
@@ -50,9 +62,9 @@ const TabDirection: React.FC = () => {
   const [resultSelects, setResultSelects] = useState<Flights []>([]);
 
   /* ----- Хранилища сортированных данных для вывода option ----- */
-  const [sortedDeparture, setSortedDeparture] = useState<Sorted []>([]);
-  const [sortedArrival, setSortedArrival] = useState<Sorted []>([]); 
-  const [sortedDate, setSortedDate] = useState<Sorted []>([]);
+  const [sortedDeparture, setSortedDeparture] = useState<SortedDeparture []>([]);
+  const [sortedArrival, setSortedArrival] = useState<SortedArrival []>([]); 
+  const [sortedDate, setSortedDate] = useState<SortedDate []>([]);
   /* -------------------- */
 
   /* ----- Обработчики от селект ----- */
@@ -76,11 +88,6 @@ const TabDirection: React.FC = () => {
   }
 
   useEffect(() => {
-    const filtringDeparture = flights.filter((departure, index, self) => {
-      index === self.findIndex((p) => p.departure === departure.departure)
-    });
-    // setSortedDeparture(filtringDeparture);
-
     const fetchFlights = async () => {
       const response = await axios.post('http://localhost:5000/', onPage, {
         withCredentials: true,
@@ -103,6 +110,19 @@ const TabDirection: React.FC = () => {
     }
     fetchFlights();
   }, []);
+  
+  useEffect(() => {
+    const flightsWithKeys = flights.map((flight) => ({
+      id: flight.id,
+      depature: flight.departure
+    }));
+    const filtringDeparture = flightsWithKeys.filter((departure, index, self) => {
+      return index === self.findIndex((p) => p.depature === departure.depature)
+    });
+    //setSortedDeparture(filtringDeparture); 
+    
+  }, []);
+  //console.log(sortedDeparture);
   
   useEffect(() => {
     const filteredFlights = flights.filter((flight: Flights) => 
