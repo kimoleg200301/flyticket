@@ -31,7 +31,7 @@ const RegisterForm: React.FC = () => {
             console.log("Данные были успешно отправлены: ", response.data);
             if (response.data.result == true) {
                 alert(response.data.message);
-                navigate('/LoginForm');
+                navigate('/login');
             }
             else {
                 alert(response.data.message);
@@ -69,7 +69,7 @@ const RegisterForm: React.FC = () => {
                 <button type="submit">Зарегистрироваться</button>
             </div>
             <div className="form-footer">
-                Уже есть аккаунт? <a href="LoginForm">Войти</a>
+                Уже есть аккаунт? <a href="login">Войти</a>
             </div>
         </form>
     </div>
