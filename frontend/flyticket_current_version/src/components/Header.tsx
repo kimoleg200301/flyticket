@@ -1,7 +1,8 @@
 // Header.tsx
 import React, { useState } from 'react';
-import { FaUser } from 'react-icons/fa';  // Font Awesome иконка
-import Logo from '../icons/logo.svg';
+import { Link, useNavigate } from 'react-router-dom';
+import { MdGridOn } from 'react-icons/md';
+import { FaGlobe } from 'react-icons/fa';
 
 interface Token {
   username: string;
@@ -10,6 +11,15 @@ interface Token {
 
 const Header: React.FC<Token> = ({username, role}) => {
   const [isClickedUser, setIsClickedUser] = useState<boolean>(false);
+  const entryNavigate = useNavigate();
+  const regNavigate = useNavigate();
+
+  const clickEntry = () => {
+    entryNavigate('/login');
+  }
+  const clickReg = () => {
+    regNavigate('/register');
+  }
   
   const userClick = () => {
     if (isClickedUser) {
@@ -21,22 +31,23 @@ const Header: React.FC<Token> = ({username, role}) => {
   }
 
   return (
-    <div className="fixed top-0 left-0 w-full h-14 flex items-center justify-between bg-customGray p-4 shadow-md z-40 select-none">
-      {/* Логотип */}
-      <div className='animate-fadeIn text-black text-xl font-bold h-50 pr-2 bg-black bg-opacity-0 hover:bg-opacity-5 transition-colors duration-150 cursor-pointer rounded-xl'>
-        <a href='/'><img src={Logo} alt="Логотип" className="w-50 h-50 inline-block" /><span>flyticket</span></a>
+    <div className="fixed top-0 left-0 w-full h-[60px] flex items-center justify-between bg-[#f1f5f6] pl-[100px] pr-[100px] mx-auto z-40 select-none">
+      {/* logo */}
+      <div className='animate-fadeIn font-bold bg-black bg-opacity-0 hover:bg-opacity-5 transition-colors duration-150 cursor-pointer'>
+        <a href='/'><MdGridOn className="text-5xl inline-block text-gray-500 text-xl" /></a>
       </div>
-
-      {/* User */}
-      <div onClick={userClick} className={`animate-fadeIn bg-black ${isClickedUser ? 'bg-opacity-5' : 'bg-opacity-0'} p-2 hover:bg-opacity-5 transition-colors duration-150 p-2 cursor-pointer rounded-xl`}>
-        <div className={`inline-block transition-all ${isClickedUser ? 'animate-slideInFromRight' : 'animate-slideOutToRight bg-opacity-0'}`}>
-          <span className='text-gray-500 text-md font-bold inline-block ml-2'>ФИО Пользователя: {username}</span>
-          <span className='text-gray-500 text-md font-bold inline-block ml-2'>Роль: {role}</span>
-        </div>
-        <div className={`text-gray-500 inline-block animate-fadeIn`}>
-          <FaUser className="text-2xl inline-block"/>
-          <span className='text-md font-bold inline-block ml-2'>Профиль</span>
-        </div>
+      {/* center */}
+      <div className='absolute left-1/2 transform -translate-x-1/2 flex items-center justify-between space-x-12'>
+        <button className='text-gray-500 font-bold'>Поддержка</button>
+        <button className='text-gray-500 font-bold flex items-center'>
+          <FaGlobe className='mr-[5px] text-xl text-gray-500' />
+          Язык
+        </button>
+      </div>
+      {/* user */}
+      <div className='space-x-12'>
+        <button onClick={clickEntry} className='text-gray-500 font-bold'>Вход</button>
+        <button onClick={clickReg} className='text-gray-500 font-bold'>Регистрация</button>
       </div>
     </div>
   );

@@ -15,7 +15,7 @@ const FlightCardSettings: React.FC<FlightProps> = ({ id, departure, arrival, dat
   return (
     // Тут не ссылка, а отображение модального окна
     <>
-    <div className='transform transition duration-300 hover:scale-105 h-200 w-350 sm:w-700 m-4 p-6 bg-white shadow-xl rounded-16 cursor-pointer'>
+    <div className='transform transition duration-300 hover:scale-105 h-200 w-350 sm:w-700 m-[10px] p-6 bg-white shadow-xl rounded-16 flex flex-col text-center items-center justify-center cursor-pointer'>
       <h1 className='font-bold text-2xl m-0 p-0'>
         {departure} - {arrival}
       </h1>
