@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useResolvedPath } from 'react-router-dom';
 import FlightCard from "../FlightCard";
 
 import Header from "../Header";
@@ -16,6 +16,10 @@ interface Flights {
   economy: number;
   business: number;
   firstClass: number;
+}
+interface Sorted {
+  id: number;
+  value: string;
 }
 interface Token {
   username: string;
@@ -45,6 +49,12 @@ const TabDirection: React.FC = () => {
   });
   const [resultSelects, setResultSelects] = useState<Flights []>([]);
 
+  /* ----- Хранилища сортированных данных для вывода option ----- */
+  const [sortedDeparture, setSortedDeparture] = useState<Sorted []>([]);
+  const [sortedArrival, setSortedArrival] = useState<Sorted []>([]); 
+  const [sortedDate, setSortedDate] = useState<Sorted []>([]);
+  /* -------------------- */
+
   /* ----- Обработчики от селект ----- */
   const [selectDeparture, setSelectDeparture] = useState<string>('');
   const [selectArrival, setSelectArrival] = useState<string>('');
@@ -66,6 +76,11 @@ const TabDirection: React.FC = () => {
   }
 
   useEffect(() => {
+    const filtringDeparture = flights.filter((departure, index, self) => {
+      index === self.findIndex((p) => p.departure === departure.departure)
+    });
+    // setSortedDeparture(filtringDeparture);
+
     const fetchFlights = async () => {
       const response = await axios.post('http://localhost:5000/', onPage, {
         withCredentials: true,

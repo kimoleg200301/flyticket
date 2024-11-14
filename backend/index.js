@@ -175,6 +175,10 @@ async function addUser() {
         if (IIN === '012345678912') { // под иином 012345678912 регистрируется админ
           role = 'admin';
         }
+        const [role_column_check] = await pool.query(`select column_name from information_schema.columns where TABLE_SCHEMA = 'flyticket' and table_name = 'users' and column_name = 'role';`);
+        if (role_column_check.length === 0) {
+          await pool.query(`alter table users add column role varchar(255) not null`);
+        } 
         const [data] = await pool.query(`insert into users (IIN, username, role, password) values (?, ?, ?, ?)`, [IIN, username, role, password]);
         res.json({
           result: true,

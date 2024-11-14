@@ -71,7 +71,7 @@ const LoginForm: React.FC = () => {
                     <button type="submit">Войти</button>
                 </div>
                 <div className="form-footer">
-                    Нет аккаунта? <a href="RegisterForm">Регистрация</a>
+                    Нет аккаунта? <a href="register">Регистрация</a>
                 </div>
             </form>
         </div>
