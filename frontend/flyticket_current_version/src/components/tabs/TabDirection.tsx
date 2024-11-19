@@ -87,7 +87,7 @@ const TabDirection: React.FC = () => {
     navigate('/SettingsPage');
   }
 
-  useEffect(() => {
+  useEffect(() => { // useEffect который имеет api
     const fetchFlights = async () => {
       const response = await axios.post('http://localhost:5000/', onPage, {
         withCredentials: true,
@@ -111,25 +111,52 @@ const TabDirection: React.FC = () => {
     fetchFlights();
   }, []);
   
-  useEffect(() => {
-    const flightsWithKeys = flights.map((flight) => ({
+  useEffect(() => { // useEffect для фильтрации значений фильтров при получении значений в массив flights
+    /* ----- departure ----- */
+    const departureWithKeys = flights.map((flight) => ({
       id: flight.id,
-      depature: flight.departure
+      departure: flight.departure
     }));
-    const filtringDeparture = flightsWithKeys.filter((departure, index, self) => {
-      return index === self.findIndex((p) => p.depature === departure.depature)
+    const filtringDeparture = departureWithKeys.filter((departure, index, self) => {
+      return index === self.findIndex((p) => p.departure === departure.departure)
     });
-    //setSortedDeparture(filtringDeparture); 
-    
-  }, []);
-  //console.log(sortedDeparture);
+    /* --------------------- */
+    /* ----- arrival ----- */
+    const arrivalWithKeys = flights.map((flight) => ({
+      id: flight.id,
+      arrival: flight.arrival
+    }));
+    const filtringArrival = arrivalWithKeys.filter((arrival, index, self) => {
+      return index === self.findIndex((p) => p.arrival === arrival.arrival)
+    });
+    /* --------------------- */
+    /* ----- date ----- */
+    const dateWithKeys = flights.map((flight) => ({
+      id: flight.id,
+      date: flight.date
+    }));
+    const filtringDate = dateWithKeys.filter((date, index, self) => {
+      return index === self.findIndex((p) => p.date === date.date)
+    });
+    /* ----- накладываем в setState ----- */
+    setSortedDeparture(filtringDeparture);
+    setSortedArrival(filtringArrival);
+    setSortedDate(filtringDate);
+    /* --------------------- */
+  }, [flights]);
   
-  useEffect(() => {
-    const filteredFlights = flights.filter((flight: Flights) => 
-    (selectDeparture ? flight.departure === selectDeparture : true) &&
-    (selectArrival ? flight.arrival === selectArrival : true) &&
-    (selectDate ? flight.date === selectDate : true)
-    );
+  useEffect(() => { /* ----- useEffect для вывода нужных карточек в зависимости от выбранных значений в фильтрах ----- */ 
+    const filteredFlights = flights.filter((flight: Flights) => {
+      const matchesDeparture = selectDeparture ? flight.departure === selectDeparture : true;
+      const matchesArrival = selectArrival ? flight.arrival === selectArrival : true;
+      const matchesDate = selectDate ? flight.date === selectDate : true;
+      
+      if (selectDeparture && matchesDeparture) {
+        console.log(`Рейс найден с отправлением из ${matchesDeparture}`);
+      }
+
+      return matchesDeparture && matchesArrival && matchesDate;
+    });
     setResultSelects(filteredFlights);
   }, [flights, selectDeparture, selectArrival, selectDate]);
   return (
@@ -140,7 +167,7 @@ const TabDirection: React.FC = () => {
           <div className="pl-[100px] pr-[100px] text-center flex flex-col items-center justify-between space-y-4"> {/* начало */}
             <select id="point_of_departure" onChange={handleChangeDeparture} className="h-[60px] w-350 font-bold text-center sm:-translate-x-4 sm:-translate-y-4 bg-white border border-gray-300 rounded-16 p-2">
               <option value="">Откуда</option>
-              {flights.map((departure_) => (
+              {sortedDeparture.map((departure_) => (
                 <>
                 <option key={departure_.id} value={departure_.departure}>{departure_.departure}</option>
                 </>
@@ -149,7 +176,7 @@ const TabDirection: React.FC = () => {
             </select>
             <select id="point_of_arrival" onChange={handleChangeArrival} className="h-[60px] w-350 font-bold text-center sm:-translate-x-4 sm:-translate-y-4 bg-white border border-gray-300 rounded-16 p-2">
               <option value="">Куда</option>
-              {flights.map((arrival_) => (
+              {sortedArrival.map((arrival_) => (
                 <>
                 <option key={arrival_.id} value={arrival_.arrival}>{arrival_.arrival}</option>
                 </>
@@ -158,7 +185,7 @@ const TabDirection: React.FC = () => {
             </select>
             <select id="date_of_dispatch" onChange={handleChangeDate} className="h-[60px] w-350 font-bold text-center sm:-translate-x-4 sm:-translate-y-4 bg-white border border-gray-300 rounded-16 p-2">
               <option value="">Когда</option>
-              {flights.map((date_) => (
+              {sortedDate.map((date_) => (
                 <>
                 <option key={date_.id} value={date_.date}>{date_.date}</option>
                 </>
