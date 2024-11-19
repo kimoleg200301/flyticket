@@ -59,7 +59,11 @@ const TabDirection: React.FC = () => {
     role: '',
     right: false,
   });
+  /* ----- Хранит выбранные в фильтрах объекты ----- */
   const [resultSelects, setResultSelects] = useState<Flights []>([]);
+  /* -------------------- */
+
+  const [flagToStart, setFlagToStart] = useState(false);
 
   /* ----- Хранилища сортированных данных для вывода option ----- */
   const [sortedDeparture, setSortedDeparture] = useState<SortedDeparture []>([]);
@@ -143,18 +147,30 @@ const TabDirection: React.FC = () => {
     setSortedArrival(filtringArrival);
     setSortedDate(filtringDate);
     /* --------------------- */
-  }, [flights]);
+  }, [flights, flagToStart]);
   
   useEffect(() => { /* ----- useEffect для вывода нужных карточек в зависимости от выбранных значений в фильтрах ----- */ 
     const filteredFlights = flights.filter((flight: Flights) => {
       const matchesDeparture = selectDeparture ? flight.departure === selectDeparture : true;
       const matchesArrival = selectArrival ? flight.arrival === selectArrival : true;
       const matchesDate = selectDate ? flight.date === selectDate : true;
-      
       if (selectDeparture && matchesDeparture) {
-        console.log(`Рейс найден с отправлением из ${matchesDeparture}`);
-      }
+        setFlagToStart(true);
 
+      }
+      if (selectArrival && matchesArrival) {
+        // sortedArrival.filter((flight: SortedArrival) => flight.arrival !== selectArrival);
+        if (selectArrival !== null) {
+          setSortedDeparture(sortedDeparture.filter((flight: SortedDeparture) => sortedDeparture.some((arrival) => arrival.id !== flight.id)));
+          setSortedDate(sortedDate.filter((flight: SortedDate) => sortedDate.some((date) => date.id !== flight.id)));
+        }
+        else {
+          setFlagToStart(false);
+        }
+      }
+      if (selectDate && matchesDate) {
+        // sortedDate.filter((flight: SortedDate) => flight.date !== selectDate);
+      }
       return matchesDeparture && matchesArrival && matchesDate;
     });
     setResultSelects(filteredFlights);
