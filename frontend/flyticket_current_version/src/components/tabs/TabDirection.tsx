@@ -42,6 +42,40 @@ interface Token {
 const TabDirection: React.FC = () => {
   const navigate = useNavigate();
   const onPage = 'MainPage';
+  const mas = [
+    {
+      id: 0,
+      item: 'item1'
+    },
+    {
+      id: 1,
+      item: 'item1'
+    },
+    {
+      id: 2,
+      item: 'item2'
+    },
+    {
+      id: 3,
+      item: 'item2'
+    },
+    {
+      id: 4,
+      item: 'item3'
+    },
+    {
+      id: 5,
+      item: 'item3'
+    },
+    {
+      id: 6,
+      item: 'item4'
+    },
+    {
+      id: 7,
+      item: 'item4'
+    },
+  ]
   const [flights, setFlights] = useState<Flights []>([{
     id: 0,
     departure: '',
@@ -64,8 +98,6 @@ const TabDirection: React.FC = () => {
   /* -------------------- */
 
   const [flagToStart, setFlagToStart] = useState(false);
-
-  const [log, setLog] = useState<SortedArrival []>([]);
 
   /* ----- Хранилища сортированных данных для вывода option ----- */
   const [sortedDeparture, setSortedDeparture] = useState<SortedDeparture []>([]);
@@ -157,30 +189,51 @@ const TabDirection: React.FC = () => {
       const matchesArrival = selectArrival ? flight.arrival === selectArrival : true;
       const matchesDate = selectDate ? flight.date === selectDate : true;
       if (selectDeparture && matchesDeparture) {
-        //const findingForDeleteArrival = sortedArrival.filter(city => city.value === selectDeparture);
         // надо сделать так, чтобы метод делал поиск по названию города и вытаскивал ИД для ограничения такого города в фильтре, то есть создать массив с ИД для ограничения отображения
-        setSortedArrival(sortedArrival.filter((flight: SortedArrival) => sortedDeparture.some((departure) => departure.id !== flight.id)));
-        setSortedDate(sortedDate.filter((flight: SortedDate) => sortedDeparture.some((departure) => departure.id !== flight.id)));
-
-        //setFlagToStart(true);
-        console.log("Вывод условия 'selectDeparture && matchesDeparture'");
-        console.log('sortedArrival: ' + sortedArrival[2].arrival);
+        // const a = mas.filter(a => a.item === "item2").map(a => a.id); // пример работы фильтра
+        // console.log(a);
+        if (!selectArrival || !selectDate) {
+          setFlagToStart(false);
+          const findingForDelete = flights.filter(city => city.departure === selectDeparture).map(e => e.id);
+          setSortedArrival(sortedArrival.filter((flight: SortedArrival) => findingForDelete.some((arrival) => arrival === flight.id)));
+          setSortedDate(sortedDate.filter((flight: SortedDate) => findingForDelete.some((departure) => departure === flight.id)));
+          console.log("Вывод условия 'selectDeparture && matchesDeparture'");
+          console.log('findingForDelete: ' + findingForDelete);
+        }
+        else {
+          setFlagToStart(true);
+        }
+      }
+      else {
+        setFlagToStart(true);
       }
       if (selectArrival && matchesArrival) {
-        console.log("Вывод условия 'selectArrival && matchesArrival'");
-        // sortedArrival.filter((flight: SortedArrival) => flight.arrival !== selectArrival);
-
-        // if (selectArrival) {
-        //   setSortedDeparture(sortedDeparture.filter((flight: SortedDeparture) => sortedDeparture.some((arrival) => arrival.id !== flight.id)));
-        //   setSortedDate(sortedDate.filter((flight: SortedDate) => sortedDate.some((date) => date.id !== flight.id)));
-        // }
-        // else {
-        //   setFlagToStart(false);
-        // }
+        if (!selectDeparture || !selectDate) {
+          setFlagToStart(false);
+          const findingForDelete = flights.filter(city => city.arrival === selectArrival).map(e => e.id);
+          setSortedDeparture(sortedDeparture.filter((flight: SortedDeparture) => findingForDelete.some((departure) => departure === flight.id)));
+          setSortedDate(sortedDate.filter((flight: SortedDate) => findingForDelete.some((departure) => departure === flight.id)));
+        }
+        else {
+          setFlagToStart(true);
+        }
+      }
+      else {
+        setFlagToStart(true);
       }
       if (selectDate && matchesDate) {
-        console.log("Вывод условия 'selectDate && matchesDate'");
-        // sortedDate.filter((flight: SortedDate) => flight.date !== selectDate);
+        if (!selectArrival || !selectDeparture) {
+          setFlagToStart(false);
+          const findingForDelete = flights.filter(city => city.departure === selectDeparture).map(e => e.id);
+          setSortedArrival(sortedArrival.filter((flight: SortedArrival) => findingForDelete.some((arrival) => arrival === flight.id)));
+          setSortedDeparture(sortedDeparture.filter((flight: SortedDeparture) => findingForDelete.some((departure) => departure === flight.id)));
+        }
+        else {
+          setFlagToStart(true);
+        }
+      }
+      else {
+        setFlagToStart(true);
       }
       return matchesDeparture && matchesArrival && matchesDate;
     });
