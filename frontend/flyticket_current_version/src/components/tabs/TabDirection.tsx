@@ -65,6 +65,8 @@ const TabDirection: React.FC = () => {
 
   const [flagToStart, setFlagToStart] = useState(false);
 
+  const [log, setLog] = useState<SortedArrival []>([]);
+
   /* ----- Хранилища сортированных данных для вывода option ----- */
   const [sortedDeparture, setSortedDeparture] = useState<SortedDeparture []>([]);
   const [sortedArrival, setSortedArrival] = useState<SortedArrival []>([]); 
@@ -155,20 +157,29 @@ const TabDirection: React.FC = () => {
       const matchesArrival = selectArrival ? flight.arrival === selectArrival : true;
       const matchesDate = selectDate ? flight.date === selectDate : true;
       if (selectDeparture && matchesDeparture) {
-        setFlagToStart(true);
+        //const findingForDeleteArrival = sortedArrival.filter(city => city.value === selectDeparture);
+        // надо сделать так, чтобы метод делал поиск по названию города и вытаскивал ИД для ограничения такого города в фильтре, то есть создать массив с ИД для ограничения отображения
+        setSortedArrival(sortedArrival.filter((flight: SortedArrival) => sortedDeparture.some((departure) => departure.id !== flight.id)));
+        setSortedDate(sortedDate.filter((flight: SortedDate) => sortedDeparture.some((departure) => departure.id !== flight.id)));
 
+        //setFlagToStart(true);
+        console.log("Вывод условия 'selectDeparture && matchesDeparture'");
+        console.log('sortedArrival: ' + sortedArrival[2].arrival);
       }
       if (selectArrival && matchesArrival) {
+        console.log("Вывод условия 'selectArrival && matchesArrival'");
         // sortedArrival.filter((flight: SortedArrival) => flight.arrival !== selectArrival);
-        if (selectArrival !== null) {
-          setSortedDeparture(sortedDeparture.filter((flight: SortedDeparture) => sortedDeparture.some((arrival) => arrival.id !== flight.id)));
-          setSortedDate(sortedDate.filter((flight: SortedDate) => sortedDate.some((date) => date.id !== flight.id)));
-        }
-        else {
-          setFlagToStart(false);
-        }
+
+        // if (selectArrival) {
+        //   setSortedDeparture(sortedDeparture.filter((flight: SortedDeparture) => sortedDeparture.some((arrival) => arrival.id !== flight.id)));
+        //   setSortedDate(sortedDate.filter((flight: SortedDate) => sortedDate.some((date) => date.id !== flight.id)));
+        // }
+        // else {
+        //   setFlagToStart(false);
+        // }
       }
       if (selectDate && matchesDate) {
+        console.log("Вывод условия 'selectDate && matchesDate'");
         // sortedDate.filter((flight: SortedDate) => flight.date !== selectDate);
       }
       return matchesDeparture && matchesArrival && matchesDate;
