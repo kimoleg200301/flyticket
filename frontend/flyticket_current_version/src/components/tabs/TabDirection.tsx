@@ -188,48 +188,29 @@ const TabDirection: React.FC = () => {
       const matchesDeparture = selectDeparture ? flight.departure === selectDeparture : true;
       const matchesArrival = selectArrival ? flight.arrival === selectArrival : true;
       const matchesDate = selectDate ? flight.date === selectDate : true;
-      if (selectDeparture && matchesDeparture) {
-        // надо сделать так, чтобы метод делал поиск по названию города и вытаскивал ИД для ограничения такого города в фильтре, то есть создать массив с ИД для ограничения отображения
-        // const a = mas.filter(a => a.item === "item2").map(a => a.id); // пример работы фильтра
-        // console.log(a);
-        if (!selectArrival || !selectDate) {
+      if ((selectDeparture && matchesDeparture) || (selectArrival && matchesArrival) || (selectDate && matchesDate)) {
+        if (selectDeparture && matchesDeparture) {
           setFlagToStart(false);
+          // надо сделать так, чтобы метод делал поиск по названию города и вытаскивал ИД для ограничения такого города в фильтре, то есть создать массив с ИД для ограничения отображения
+          // const a = mas.filter(a => a.item === "item2").map(a => a.id); // пример работы фильтра
+          // console.log(a);
           const findingForDelete = flights.filter(city => city.departure === selectDeparture).map(e => e.id);
           setSortedArrival(sortedArrival.filter((flight: SortedArrival) => findingForDelete.some((arrival) => arrival === flight.id)));
           setSortedDate(sortedDate.filter((flight: SortedDate) => findingForDelete.some((departure) => departure === flight.id)));
           console.log("Вывод условия 'selectDeparture && matchesDeparture'");
           console.log('findingForDelete: ' + findingForDelete);
         }
-        else {
-          setFlagToStart(true);
-        }
-      }
-      else {
-        setFlagToStart(true);
-      }
-      if (selectArrival && matchesArrival) {
-        if (!selectDeparture || !selectDate) {
+        if (selectArrival && matchesArrival) {
           setFlagToStart(false);
           const findingForDelete = flights.filter(city => city.arrival === selectArrival).map(e => e.id);
           setSortedDeparture(sortedDeparture.filter((flight: SortedDeparture) => findingForDelete.some((departure) => departure === flight.id)));
           setSortedDate(sortedDate.filter((flight: SortedDate) => findingForDelete.some((departure) => departure === flight.id)));
         }
-        else {
-          setFlagToStart(true);
-        }
-      }
-      else {
-        setFlagToStart(true);
-      }
-      if (selectDate && matchesDate) {
-        if (!selectArrival || !selectDeparture) {
+        if (selectDate && matchesDate) {
           setFlagToStart(false);
           const findingForDelete = flights.filter(city => city.departure === selectDeparture).map(e => e.id);
           setSortedArrival(sortedArrival.filter((flight: SortedArrival) => findingForDelete.some((arrival) => arrival === flight.id)));
           setSortedDeparture(sortedDeparture.filter((flight: SortedDeparture) => findingForDelete.some((departure) => departure === flight.id)));
-        }
-        else {
-          setFlagToStart(true);
         }
       }
       else {
