@@ -222,7 +222,7 @@ const TabDirection: React.FC = () => {
   }, [flights, selectDeparture, selectArrival, selectDate]);
   return (
     <>
-    <Header username='oleg' role='admin'/>
+    <Header username={token.username} role={token.role}/>
       <div className='mt-[60px]'>
         <ContentTop tab={'TabDirection'} />
           <div className="pl-[100px] pr-[100px] text-center flex flex-col items-center justify-between space-y-4"> {/* начало */}
