@@ -42,40 +42,6 @@ interface Token {
 const TabDirection: React.FC = () => {
   const navigate = useNavigate();
   const onPage = 'MainPage';
-  const mas = [
-    {
-      id: 0,
-      item: 'item1'
-    },
-    {
-      id: 1,
-      item: 'item1'
-    },
-    {
-      id: 2,
-      item: 'item2'
-    },
-    {
-      id: 3,
-      item: 'item2'
-    },
-    {
-      id: 4,
-      item: 'item3'
-    },
-    {
-      id: 5,
-      item: 'item3'
-    },
-    {
-      id: 6,
-      item: 'item4'
-    },
-    {
-      id: 7,
-      item: 'item4'
-    },
-  ]
   const [flights, setFlights] = useState<Flights []>([{
     id: 0,
     departure: '',
@@ -150,79 +116,99 @@ const TabDirection: React.FC = () => {
   }, []);
   
   useEffect(() => { // useEffect для фильтрации значений фильтров при получении значений в массив flights
-    /* ----- departure ----- */
-    const departureWithKeys = flights.map((flight) => ({
-      id: flight.id,
-      departure: flight.departure
-    }));
-    const filtringDeparture = departureWithKeys.filter((departure, index, self) => {
-      return index === self.findIndex((p) => p.departure === departure.departure)
-    });
-    /* --------------------- */
-    /* ----- arrival ----- */
-    const arrivalWithKeys = flights.map((flight) => ({
-      id: flight.id,
-      arrival: flight.arrival
-    }));
-    const filtringArrival = arrivalWithKeys.filter((arrival, index, self) => {
-      return index === self.findIndex((p) => p.arrival === arrival.arrival)
-    });
-    /* --------------------- */
-    /* ----- date ----- */
-    const dateWithKeys = flights.map((flight) => ({
-      id: flight.id,
-      date: flight.date
-    }));
-    const filtringDate = dateWithKeys.filter((date, index, self) => {
-      return index === self.findIndex((p) => p.date === date.date)
-    });
-    /* ----- накладываем в setState ----- */
-    setSortedDeparture(filtringDeparture);
-    setSortedArrival(filtringArrival);
-    setSortedDate(filtringDate);
-    /* --------------------- */
+    console.log('Заупск второго хука');
+    if (flagToStart) {
+      console.log('Заупск второго хука по условию');
+      /* ----- departure ----- */
+      const departureWithKeys = flights.map((flight) => ({
+        id: flight.id,
+        departure: flight.departure
+      }));
+      const filtringDeparture = departureWithKeys.filter((departure, index, self) => {
+        return index === self.findIndex((p) => p.departure === departure.departure)
+      });
+      /* --------------------- */
+      /* ----- arrival ----- */
+      const arrivalWithKeys = flights.map((flight) => ({
+        id: flight.id,
+        arrival: flight.arrival
+      }));
+      const filtringArrival = arrivalWithKeys.filter((arrival, index, self) => {
+        return index === self.findIndex((p) => p.arrival === arrival.arrival)
+      });
+      /* --------------------- */
+      /* ----- date ----- */
+      const dateWithKeys = flights.map((flight) => ({
+        id: flight.id,
+        date: flight.date
+      }));
+      const filtringDate = dateWithKeys.filter((date, index, self) => {
+        return index === self.findIndex((p) => p.date === date.date)
+      });
+      /* ----- накладываем в setState ----- */
+      setSortedDeparture(filtringDeparture);
+      setSortedArrival(filtringArrival);
+      setSortedDate(filtringDate);
+      /* --------------------- */
+      return;
+    }
   }, [flights, flagToStart]);
   
-  useEffect(() => { /* ----- useEffect для вывода нужных карточек в зависимости от выбранных значений в фильтрах ----- */ 
-    const filteredFlights = flights.filter((flight: Flights) => {
+  useEffect(() => {
+    console.log('Заупск третьего хука');
+    if (!selectDeparture && !selectArrival && !selectDate) {
+      setResultSelects(flights);
+      setFlagToStart(true);
+      console.log('При запуске хука не выбрано хоть одно поле');
+      return;
+    }
+  
+    // Фильтруем данные
+    const filteredFlights = flights.filter((flight) => {
+      console.log('Запуск фильтрыции карточек');
       const matchesDeparture = selectDeparture ? flight.departure === selectDeparture : true;
       const matchesArrival = selectArrival ? flight.arrival === selectArrival : true;
       const matchesDate = selectDate ? flight.date === selectDate : true;
-      if ((selectDeparture && matchesDeparture) || (selectArrival && matchesArrival) || (selectDate && matchesDate)) {
-        if (selectDeparture && matchesDeparture) {
-          setFlagToStart(false);
-          // надо сделать так, чтобы метод делал поиск по названию города и вытаскивал ИД для ограничения такого города в фильтре, то есть создать массив с ИД для ограничения отображения
-          // const a = mas.filter(a => a.item === "item2").map(a => a.id); // пример работы фильтра
-          // console.log(a);
-          const findingForDelete = flights.filter(city => city.departure === selectDeparture).map(e => e.id);
-          setSortedArrival(sortedArrival.filter((flight: SortedArrival) => findingForDelete.some((arrival) => arrival === flight.id)));
-          setSortedDate(sortedDate.filter((flight: SortedDate) => findingForDelete.some((departure) => departure === flight.id)));
-          console.log("Вывод условия 'selectDeparture && matchesDeparture'");
-          console.log('findingForDelete: ' + findingForDelete);
-        }
-        if (selectArrival && matchesArrival) {
-          setFlagToStart(false);
-          const findingForDelete = flights.filter(city => city.arrival === selectArrival).map(e => e.id);
-          setSortedDeparture(sortedDeparture.filter((flight: SortedDeparture) => findingForDelete.some((departure) => departure === flight.id)));
-          setSortedDate(sortedDate.filter((flight: SortedDate) => findingForDelete.some((departure) => departure === flight.id)));
-        }
-        if (selectDate && matchesDate) {
-          setFlagToStart(false);
-          const findingForDelete = flights.filter(city => city.departure === selectDeparture).map(e => e.id);
-          setSortedArrival(sortedArrival.filter((flight: SortedArrival) => findingForDelete.some((arrival) => arrival === flight.id)));
-          setSortedDeparture(sortedDeparture.filter((flight: SortedDeparture) => findingForDelete.some((departure) => departure === flight.id)));
-        }
-      }
-      else {
-        setFlagToStart(true);
-      }
       return matchesDeparture && matchesArrival && matchesDate;
     });
-    setResultSelects(filteredFlights);
+  
+    // Обновляем состояние, только если данные изменились
+    if (JSON.stringify(filteredFlights) !== JSON.stringify(resultSelects)) {
+      setResultSelects(filteredFlights);
+      console.log('Заупск обновления состояния');
+    }
+    console.log('Заупск обновелния опций');
+  
+    // Обновляем списки опций
+    const availableDepartures = flights
+      .filter((flight) =>
+        selectArrival ? flight.arrival === selectArrival : true &&
+        selectDate ? flight.date === selectDate : true
+      )
+      .map((flight) => ({ id: flight.id, departure: flight.departure }));
+  
+    const availableArrivals = flights
+      .filter((flight) =>
+        selectDeparture ? flight.departure === selectDeparture : true &&
+        selectDate ? flight.date === selectDate : true
+      )
+      .map((flight) => ({ id: flight.id, arrival: flight.arrival }));
+  
+    const availableDates = flights
+      .filter((flight) =>
+        selectDeparture ? flight.departure === selectDeparture : true &&
+        selectArrival ? flight.arrival === selectArrival : true
+      )
+      .map((flight) => ({ id: flight.id, date: flight.date }));
+    
+    setFlagToStart(false);
+    setSortedDeparture(availableDepartures);
+    setSortedArrival(availableArrivals);
+    setSortedDate(availableDates);
   }, [flights, selectDeparture, selectArrival, selectDate]);
   return (
     <>
-    <Header username={token.username} role={token.role}/>
+    <Header username='oleg' role='admin'/>
       <div className='mt-[60px]'>
         <ContentTop tab={'TabDirection'} />
           <div className="pl-[100px] pr-[100px] text-center flex flex-col items-center justify-between space-y-4"> {/* начало */}
@@ -274,4 +260,4 @@ const TabDirection: React.FC = () => {
   );
 }
 
-export default TabDirection;
+export default TabDirection;
